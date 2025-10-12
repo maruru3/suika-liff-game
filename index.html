@@ -542,6 +542,129 @@
         let liffInitialized = false;
         let userProfile = null;
 
+        // オーディオコンテキストとサウンドシステム
+        let audioContext = null;
+        let masterVolume = 0.3;
+
+        // オーディオコンテキストの初期化
+        function initAudio() {
+            if (!audioContext) {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            return audioContext;
+        }
+
+        // フルーツドロップサウンド生成
+        function playDropSound(fruitType) {
+            if (!initAudio()) return;
+
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const filterNode = audioContext.createBiquadFilter();
+
+            // フルーツサイズに基づく周波数（大きいフルーツほど低い音）
+            const baseFreq = 800 - (fruitType * 60);
+
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+            oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, audioContext.currentTime + 0.3);
+
+            // フィルター設定（柔らかい落下音）
+            filterNode.type = 'lowpass';
+            filterNode.frequency.setValueAtTime(2000, audioContext.currentTime);
+            filterNode.Q.setValueAtTime(1, audioContext.currentTime);
+
+            // ボリューム設定（短くて柔らかい音）
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.4, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+
+            // 接続
+            oscillator.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // 再生
+            oscillator.start(audioContext.currentTime);
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        // フルーツマージサウンド生成
+        function playMergeSound(newFruitType) {
+            if (!initAudio()) return;
+
+            // メインの合体音
+            const oscillator1 = audioContext.createOscillator();
+            const oscillator2 = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const filterNode = audioContext.createBiquadFilter();
+
+            // 新しいフルーツに基づくハーモニック周波数
+            const fundamental = 400 + (newFruitType * 100);
+            const harmonic = fundamental * 1.5;
+
+            oscillator1.type = 'triangle';
+            oscillator1.frequency.setValueAtTime(fundamental, audioContext.currentTime);
+            oscillator1.frequency.exponentialRampToValueAtTime(fundamental * 1.5, audioContext.currentTime + 0.2);
+
+            oscillator2.type = 'sine';
+            oscillator2.frequency.setValueAtTime(harmonic, audioContext.currentTime);
+            oscillator2.frequency.exponentialRampToValueAtTime(harmonic * 0.8, audioContext.currentTime + 0.4);
+
+            // フィルター（明るい合体音）
+            filterNode.type = 'bandpass';
+            filterNode.frequency.setValueAtTime(1500, audioContext.currentTime);
+            filterNode.Q.setValueAtTime(2, audioContext.currentTime);
+
+            // ボリューム（成長する音）
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.6, audioContext.currentTime + 0.05);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+
+            // 接続
+            oscillator1.connect(filterNode);
+            oscillator2.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            // 再生
+            oscillator1.start(audioContext.currentTime);
+            oscillator2.start(audioContext.currentTime);
+            oscillator1.stop(audioContext.currentTime + 0.5);
+            oscillator2.stop(audioContext.currentTime + 0.5);
+
+            // 追加のキラキラ音エフェクト
+            setTimeout(() => {
+                playSparkleSound(newFruitType);
+            }, 100);
+        }
+
+        // キラキラエフェクト音
+        function playSparkleSound(fruitType) {
+            if (!initAudio()) return;
+
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const oscillator = audioContext.createOscillator();
+                    const gainNode = audioContext.createGain();
+
+                    const freq = 1200 + (fruitType * 200) + (Math.random() * 400);
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+
+                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(masterVolume * 0.2, audioContext.currentTime + 0.01);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+
+                    oscillator.connect(gainNode);
+                    gainNode.connect(audioContext.destination);
+
+                    oscillator.start(audioContext.currentTime);
+                    oscillator.stop(audioContext.currentTime + 0.15);
+                }, i * 50);
+            }
+        }
+
         const FRUITS = [
             {
                 emoji: '🍇', size: 18, color: '#E6B3FF', points: 1,
@@ -628,129 +751,155 @@
 
         // フルーツ形状生成関数
         function generateGrapeShape(size) {
-            // ブドウ型 - 房状で上が尖った卵型
+            // ブドウ型 - 100頂点の精密な房状クラスター
             const vertices = [];
-            const sides = 16;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.85;
+                let radiusX = size * 0.8;
                 let radiusY = size;
 
-                // 上部（茎側）を細くして尖らせる
-                if (angle > Math.PI * 1.6 || angle < Math.PI * 0.4) {
-                    radiusY *= 0.6;
-                    radiusX *= 0.8;
+                // 房の上部（茎部分）を細く長く
+                if (angle > Math.PI * 1.65 || angle < Math.PI * 0.35) {
+                    const tapering = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 3));
+                    radiusY *= 0.4 + tapering * 0.2;
+                    radiusX *= 0.6 + tapering * 0.15;
                 }
-                // 下部を少し平らに
-                else if (angle > Math.PI * 0.7 && angle < Math.PI * 1.3) {
-                    radiusY *= 1.1;
+                // 中央部の房の膨らみ
+                else if (angle > Math.PI * 0.4 && angle < Math.PI * 1.6) {
+                    const bulgeFactor = Math.sin((angle - Math.PI * 0.4) / (Math.PI * 1.2) * Math.PI);
+                    radiusX *= 0.9 + bulgeFactor * 0.15;
+                    radiusY *= 0.95 + bulgeFactor * 0.1;
                 }
 
-                // 表面の凹凸を表現
-                const bumpiness = 1 + Math.sin(angle * 6) * 0.08;
+                // 個々のブドウ粒の凹凸を表現（高頻度の細かい凹凸）
+                const grapeSeeds = 1 + Math.sin(angle * 18) * 0.06 + Math.sin(angle * 24) * 0.04;
+                // 房全体の不規則な輪郭
+                const clusterIrregularity = 1 + Math.sin(angle * 7) * 0.08 + Math.cos(angle * 11) * 0.05;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX * bumpiness,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * grapeSeeds * clusterIrregularity,
+                    y: Math.sin(angle) * radiusY * clusterIrregularity
                 });
             }
             return vertices;
         }
 
         function generateCherryShape(size) {
-            // チェリー型 - ハート型に近い丸みのある形
+            // チェリー型 - 100頂点の精密なハート型ベリー
             const vertices = [];
-            const sides = 20;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.9;
-                let radiusY = size * 0.95;
+                let radiusX = size * 0.88;
+                let radiusY = size * 0.92;
 
-                // 上部にハート型のくぼみを作る
-                if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
-                    const heartFactor = Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 8);
-                    radiusY *= 0.85 + heartFactor * 0.1;
-                    radiusX *= 0.9;
+                // チェリーの特徴的な上部の窒み（茎の付け根）
+                if (angle > Math.PI * 1.75 || angle < Math.PI * 0.25) {
+                    const indent = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 12));
+                    radiusY *= 0.75 + indent * 0.15;
+                    radiusX *= 0.85 + indent * 0.1;
                 }
-                // 下部を少し尖らせる
-                else if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
-                    radiusY *= 1.05;
-                    radiusX *= 0.95;
+                // メインボディの丸み
+                else if (angle > Math.PI * 0.3 && angle < Math.PI * 1.7) {
+                    const roundness = Math.sin((angle - Math.PI * 0.3) / (Math.PI * 1.4) * Math.PI);
+                    radiusX *= 0.95 + roundness * 0.08;
+                    radiusY *= 0.96 + roundness * 0.06;
                 }
+
+                // チェリーの滑らかな表面と微細な凹凸
+                const skinTexture = 1 + Math.sin(angle * 45) * 0.02 + Math.cos(angle * 32) * 0.015;
+                const naturalVariation = 1 + Math.sin(angle * 8.5) * 0.04;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * skinTexture * naturalVariation,
+                    y: Math.sin(angle) * radiusY * naturalVariation
                 });
             }
             return vertices;
         }
 
         function generateStrawberryShape(size) {
-            // イチゴ型 - 上が細く下が太いコニカル形状
+            // イチゴ型 - 100頂点の精密なコニカルアクセサリーフルーツ
             const vertices = [];
-            const sides = 18;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
                 let radiusX = size;
                 let radiusY = size;
 
-                // 上部（茎側）を大きく細くする
-                if (angle > Math.PI * 1.6 || angle < Math.PI * 0.4) {
-                    const tapering = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 2.5));
-                    radiusX *= 0.3 + tapering * 0.4;
-                    radiusY *= 0.4 + tapering * 0.3;
+                // イチゴの特徴的な上部の細み（茎と葉の部分）
+                if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
+                    const tipTaper = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 4));
+                    radiusX *= 0.2 + tipTaper * 0.3;
+                    radiusY *= 0.3 + tipTaper * 0.2;
                 }
-                // 中央部分を膨らませる
-                else if (angle > Math.PI * 0.4 && angle < Math.PI * 1.6) {
-                    const bulge = 1 + Math.sin((angle - Math.PI * 0.4) / (Math.PI * 1.2) * Math.PI) * 0.2;
-                    radiusX *= bulge;
-                    radiusY *= bulge;
+                // 上中部の緩やかな遷移
+                else if (angle > Math.PI * 1.4 && angle < Math.PI * 1.7 || angle > Math.PI * 0.3 && angle < Math.PI * 0.6) {
+                    const transition = Math.sin((angle > Math.PI ? 2*Math.PI - angle : angle) * 8);
+                    radiusX *= 0.5 + transition * 0.3;
+                    radiusY *= 0.6 + transition * 0.2;
+                }
+                // メインボディの膨らみ
+                else if (angle > Math.PI * 0.6 && angle < Math.PI * 1.4) {
+                    const bulgeFactor = Math.sin((angle - Math.PI * 0.6) / (Math.PI * 0.8) * Math.PI);
+                    radiusX *= 0.85 + bulgeFactor * 0.2;
+                    radiusY *= 0.9 + bulgeFactor * 0.15;
                 }
 
-                // 表面の種の凹凸を表現
-                const seedBumps = 1 + Math.sin(angle * 7) * 0.05;
+                // イチゴの種（アキーン）の細かい凹凸パターン
+                const seedPattern = 1 + Math.sin(angle * 28) * 0.04 + Math.cos(angle * 35) * 0.03;
+                // 不規則な表面の質感
+                const surfaceTexture = 1 + Math.sin(angle * 15) * 0.06 + Math.cos(angle * 12) * 0.04;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX * seedBumps,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * seedPattern * surfaceTexture,
+                    y: Math.sin(angle) * radiusY * surfaceTexture
                 });
             }
             return vertices;
         }
 
         function generateHeartShape(size) {
-            // 桃型 - 縦に長い楕円形で中央にくぼみ
+            // 桃型 - 100頂点の精密な核果（ドループ）
             const vertices = [];
-            const sides = 24;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.85;
-                let radiusY = size * 1.1;
+                let radiusX = size * 0.82;
+                let radiusY = size * 1.15;
 
-                // 桃の特徴的な縦の溝を表現
-                if (angle > Math.PI * 0.9 && angle < Math.PI * 1.1) {
-                    radiusX *= 0.92; // 右側の溝
-                } else if (angle > Math.PI * 1.9 || angle < Math.PI * 0.1) {
-                    radiusX *= 0.92; // 左側の溝
+                // 桃の特徴的な縦の溝（縫合線）
+                if (angle > Math.PI * 0.95 && angle < Math.PI * 1.05) {
+                    radiusX *= 0.88; // メインの溝
+                } else if (angle > Math.PI * 1.95 || angle < Math.PI * 0.05) {
+                    radiusX *= 0.89; // 対側の溝
                 }
 
-                // 上部を少し平らに
-                if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
-                    radiusY *= 0.95;
+                // 上部（茎側）の幅広い形状
+                if (angle > Math.PI * 1.6 || angle < Math.PI * 0.4) {
+                    radiusY *= 0.9;
+                    radiusX *= 1.05;
                 }
-                // 下部を尖らせる
-                else if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
-                    radiusX *= 0.9;
-                    radiusY *= 1.05;
+                // 下部の尖った形状
+                else if (angle > Math.PI * 0.75 && angle < Math.PI * 1.25) {
+                    const pointedness = Math.sin((angle - Math.PI * 0.75) / (Math.PI * 0.5) * Math.PI);
+                    radiusX *= 0.85 + pointedness * 0.1;
+                    radiusY *= 1.02 + pointedness * 0.08;
                 }
 
-                // 表面の柔らかい凹凸
-                const fuzziness = 1 + Math.sin(angle * 12) * 0.03;
+                // 桃の柔らかい産毛の質感
+                const fuzzTexture = 1 + Math.sin(angle * 48) * 0.02 + Math.cos(angle * 33) * 0.015;
+                // 不規則な表面の質感
+                const naturalBumps = 1 + Math.sin(angle * 13) * 0.04 + Math.cos(angle * 17) * 0.03;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX * fuzziness,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * fuzzTexture * naturalBumps,
+                    y: Math.sin(angle) * radiusY * naturalBumps
                 });
             }
             return vertices;
@@ -771,139 +920,175 @@
         }
 
         function generateAppleShape(size) {
-            // リンゴ型 - 上部にくぼみがある丸い形
+            // リンゴ型 - 100頂点の精密なポームフルーツ
             const vertices = [];
-            const sides = 20;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.95;
-                let radiusY = size * 0.9;
+                let radiusX = size * 0.92;
+                let radiusY = size * 0.88;
 
-                // リンゴの上部の特徴的なくぼみ
+                // リンゴの特徴的な上部の深いくぼみ（5室構造）
                 if (angle > Math.PI * 1.8 || angle < Math.PI * 0.2) {
-                    const indentDepth = Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 10);
-                    radiusY *= 0.7 + indentDepth * 0.15;
-                    radiusX *= 0.85;
+                    const coreIndent = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 15));
+                    radiusY *= 0.65 + coreIndent * 0.2;
+                    radiusX *= 0.8 + coreIndent * 0.1;
                 }
-                // 中央部分を少し膨らませる
-                else if (angle > Math.PI * 0.3 && angle < Math.PI * 1.7) {
-                    const bulge = 1 + Math.sin((angle - Math.PI * 0.3) / (Math.PI * 1.4) * Math.PI) * 0.1;
-                    radiusX *= bulge;
-                    radiusY *= bulge;
+                // 上中部の緩やかな遷移
+                else if (angle > Math.PI * 1.6 && angle < Math.PI * 1.8 || angle > Math.PI * 0.2 && angle < Math.PI * 0.4) {
+                    const transition = Math.sin((angle > Math.PI ? 2*Math.PI - angle : angle) * 10);
+                    radiusY *= 0.85 + transition * 0.1;
+                    radiusX *= 0.9 + transition * 0.05;
+                }
+                // メインボディの丸み
+                else if (angle > Math.PI * 0.4 && angle < Math.PI * 1.6) {
+                    const appleBulge = Math.sin((angle - Math.PI * 0.4) / (Math.PI * 1.2) * Math.PI);
+                    radiusX *= 0.95 + appleBulge * 0.08;
+                    radiusY *= 0.92 + appleBulge * 0.1;
                 }
 
-                // リンゴの滑らかな表面
-                const smoothness = 1 + Math.sin(angle * 8) * 0.02;
+                // リンゴの滑らかで光沢のある表面
+                const glossy = 1 + Math.sin(angle * 60) * 0.015 + Math.cos(angle * 45) * 0.01;
+                // 微細な形状のバリエーション
+                const naturalVariation = 1 + Math.sin(angle * 11) * 0.03;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX * smoothness,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * glossy * naturalVariation,
+                    y: Math.sin(angle) * radiusY * naturalVariation
                 });
             }
             return vertices;
         }
 
         function generatePearShape(size) {
-            // 洋梨型 - 上が太く下が細いひょうたん形
+            // 洋梨型 - 100頂点の精密なピリフォルムポーム
             const vertices = [];
-            const sides = 22;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
                 let radiusX = size;
                 let radiusY = size;
 
-                // 下部（細い部分）
-                if (angle > Math.PI * 0.7 && angle < Math.PI * 1.3) {
-                    const narrowing = Math.sin((angle - Math.PI * 0.7) / (Math.PI * 0.6) * Math.PI);
-                    radiusX *= 0.5 + narrowing * 0.3;
-                    radiusY *= 0.8 + narrowing * 0.1;
+                // 洋梨の特徴的な下部の細いネック
+                if (angle > Math.PI * 0.75 && angle < Math.PI * 1.25) {
+                    const neckTaper = Math.sin((angle - Math.PI * 0.75) / (Math.PI * 0.5) * Math.PI);
+                    radiusX *= 0.4 + neckTaper * 0.35;
+                    radiusY *= 0.75 + neckTaper * 0.15;
                 }
-                // 上部（太い部分）
-                else if (angle > Math.PI * 1.6 || angle < Math.PI * 0.4) {
-                    radiusX *= 1.15;
-                    radiusY *= 1.1;
+                // 中央部の緩やかな移行
+                else if (angle > Math.PI * 0.55 && angle < Math.PI * 0.75 || angle > Math.PI * 1.25 && angle < Math.PI * 1.45) {
+                    const waist = Math.sin((angle > Math.PI ? 2*Math.PI - angle : angle) * 6);
+                    radiusX *= 0.7 + waist * 0.2;
+                    radiusY *= 0.85 + waist * 0.1;
                 }
-                // 中央のくびれ
-                else if (angle > Math.PI * 0.5 && angle < Math.PI * 0.7 || angle > Math.PI * 1.3 && angle < Math.PI * 1.5) {
-                    radiusX *= 0.85;
+                // 上部の大きな膨らみ（洋梨のメインボディ）
+                else if (angle > Math.PI * 1.45 || angle < Math.PI * 0.55) {
+                    radiusX *= 1.1;
+                    radiusY *= 1.08;
                 }
 
-                // 洋梨の滑らかな曲線
-                const curvature = 1 + Math.sin(angle * 6) * 0.03;
+                // 洋梨の滑らかで美しい曲線
+                const elegantCurve = 1 + Math.sin(angle * 25) * 0.02 + Math.cos(angle * 18) * 0.015;
+                // 自然な非対称性
+                const asymmetry = 1 + Math.sin(angle * 9) * 0.04;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX * curvature,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * elegantCurve * asymmetry,
+                    y: Math.sin(angle) * radiusY * asymmetry
                 });
             }
             return vertices;
         }
 
         function generatePineappleShape(size) {
-            // パイナップル型 - 縦長の楕円形で上下が少し尖る
+            // パイナップル型 - 100頂点の精密なマルチプルフルーツ
             const vertices = [];
-            const sides = 20;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.75;
-                let radiusY = size * 1.3;
+                let radiusX = size * 0.72;
+                let radiusY = size * 1.35;
 
-                // 上部を少し細くする（葉の部分に向かって）
+                // 上部（クラウンに向かう部分）の細み
                 if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
-                    radiusX *= 0.9;
-                    radiusY *= 0.9;
+                    const crownTaper = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 5));
+                    radiusX *= 0.85 + crownTaper * 0.1;
+                    radiusY *= 0.88 + crownTaper * 0.05;
                 }
-                // 下部も少し細くする
+                // 下部の緩やかな細み
                 else if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
-                    radiusX *= 0.95;
-                    radiusY *= 0.95;
+                    radiusX *= 0.92;
+                    radiusY *= 0.92;
+                }
+                // メインボディの縦長の楕円
+                else {
+                    radiusX *= 1.0;
+                    radiusY *= 1.0;
                 }
 
-                // パイナップルの表面の凹凸（ダイヤモンド模様）
-                const diamondPattern = 1 + Math.sin(angle * 8) * Math.sin(angle * 3) * 0.08;
+                // パイナップルの特徴的なダイヤモンドパターンの凹凸
+                const diamondRows = Math.sin(angle * 12) * Math.cos(angle * 8);
+                const diamondCols = Math.sin(angle * 20) * Math.cos(angle * 15);
+                const diamondTexture = 1 + (diamondRows + diamondCols) * 0.06;
+
+                // 表面の粗い質感
+                const roughSkin = 1 + Math.sin(angle * 35) * 0.04 + Math.cos(angle * 28) * 0.03;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX * diamondPattern,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * diamondTexture * roughSkin,
+                    y: Math.sin(angle) * radiusY * roughSkin
                 });
             }
             return vertices;
         }
 
         function generateMangoShape(size) {
-            // マンゴー型 - 腎臓型の非対称楕円
+            // マンゴー型 - 100頂点の精密なドループフルーツ
             const vertices = [];
-            const sides = 18;
+            const sides = 100;
+
             for (let i = 0; i < sides; i++) {
                 const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.8;
-                let radiusY = size * 1.2;
+                let radiusX = size * 0.75;
+                let radiusY = size * 1.25;
 
-                // マンゴーの特徴的な曲線形状
-                const curve = Math.sin(angle * 1.5);
+                // マンゴーの特徴的な非対称な腎臓型曲線
+                const asymmetricCurve = Math.sin(angle * 1.3) + Math.cos(angle * 2.1) * 0.5;
 
-                // 一方向への非対称な膨らみ
-                if (angle > Math.PI * 0.2 && angle < Math.PI * 1.2) {
-                    radiusX *= 1.1 + curve * 0.15;
-                } else {
-                    radiusX *= 0.9 + curve * 0.1;
+                // 片側の大きな膨らみ（種の反対側）
+                if (angle > Math.PI * 0.15 && angle < Math.PI * 1.3) {
+                    radiusX *= 1.05 + asymmetricCurve * 0.12;
+                    radiusY *= 1.02 + asymmetricCurve * 0.06;
+                }
+                // 反対側の緊しった部分（種側）
+                else {
+                    radiusX *= 0.88 + asymmetricCurve * 0.08;
+                    radiusY *= 0.96 + asymmetricCurve * 0.04;
                 }
 
-                // 上下を少し尖らせる
+                // 上部（茎側）の細み
                 if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
-                    radiusX *= 0.85;
-                    radiusY *= 0.9;
-                } else if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
-                    radiusX *= 0.9;
-                    radiusY *= 0.95;
+                    const stemTaper = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 6));
+                    radiusX *= 0.8 + stemTaper * 0.15;
+                    radiusY *= 0.85 + stemTaper * 0.1;
+                }
+                // 下部の緩やかな尖り
+                else if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
+                    radiusX *= 0.92;
+                    radiusY *= 0.94;
                 }
 
-                // マンゴーの滑らかな表面
-                const smoothness = 1 + Math.sin(angle * 10) * 0.04;
+                // マンゴーの滑らかで光沢のある表面
+                const glossySkin = 1 + Math.sin(angle * 42) * 0.02 + Math.cos(angle * 35) * 0.015;
+                // 自然な非対称性
+                const naturalAsymmetry = 1 + Math.sin(angle * 7) * 0.05;
 
                 vertices.push({
-                    x: Math.cos(angle) * radiusX * smoothness,
-                    y: Math.sin(angle) * radiusY
+                    x: Math.cos(angle) * radiusX * glossySkin * naturalAsymmetry,
+                    y: Math.sin(angle) * radiusY * naturalAsymmetry
                 });
             }
             return vertices;
@@ -1141,6 +1326,9 @@
                             World.remove(world, [bodyA, bodyB]);
                             createFruit(newX, newY, newType);
 
+                            // マージサウンドを再生
+                            playMergeSound(newType);
+
                             score += FRUITS[newType].points;
                             maxFruitReached = Math.max(maxFruitReached, newType);
                             updateDisplay();
@@ -1237,6 +1425,9 @@
 
             const type = nextFruitType;
             currentFruit = createFruit(dropX, 50, type);
+
+            // ドロップサウンドを再生
+            playDropSound(type);
 
             nextFruitType = Math.floor(Math.random() * Math.min(5, FRUITS.length));
             updateNextFruit();
