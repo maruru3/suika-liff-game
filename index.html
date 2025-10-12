@@ -508,6 +508,7 @@
         <div class="controls">
             <button class="control-btn" id="dropBtn">落とす</button>
             <button class="control-btn" id="pauseBtn">一時停止</button>
+            <button class="control-btn" id="rankingBtn">🏆ランキング</button>
             <button class="control-btn share-btn" id="shareBtn">シェア</button>
         </div>
     </div>
@@ -544,7 +545,10 @@
 
         // オーディオコンテキストとサウンドシステム
         let audioContext = null;
-        let masterVolume = 0.3;
+        let masterVolume = 0.2;
+
+        // ランキングシステム
+        let rankings = JSON.parse(localStorage.getItem('suikaRankings') || '[]');
 
         // オーディオコンテキストの初期化
         function initAudio() {
@@ -554,114 +558,219 @@
             return audioContext;
         }
 
-        // フルーツドロップサウンド生成
+        // かわいいフルーツドロップサウンド生成
         function playDropSound(fruitType) {
             if (!initAudio()) return;
 
-            const oscillator = audioContext.createOscillator();
+            // メインのぷよぷよ音
+            const osc1 = audioContext.createOscillator();
+            const osc2 = audioContext.createOscillator();
             const gainNode = audioContext.createGain();
-            const filterNode = audioContext.createBiquadFilter();
 
-            // フルーツサイズに基づく周波数（大きいフルーツほど低い音）
-            const baseFreq = 800 - (fruitType * 60);
+            // かわいい高めの音程（ペンタトニックスケール）
+            const cuteFreqs = [523, 587, 659, 784, 880, 988, 1047, 1175, 1319]; // C5からE6のペンタトニック
+            const mainFreq = cuteFreqs[fruitType % cuteFreqs.length];
+            const harmonyFreq = mainFreq * 1.25; // 完全4度のハーモニー
 
-            oscillator.type = 'sine';
-            oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 0.5, audioContext.currentTime + 0.3);
+            // メイン音（三角波で柔らかく）
+            osc1.type = 'triangle';
+            osc1.frequency.setValueAtTime(mainFreq, audioContext.currentTime);
+            osc1.frequency.linearRampToValueAtTime(mainFreq * 0.8, audioContext.currentTime + 0.15);
 
-            // フィルター設定（柔らかい落下音）
-            filterNode.type = 'lowpass';
-            filterNode.frequency.setValueAtTime(2000, audioContext.currentTime);
-            filterNode.Q.setValueAtTime(1, audioContext.currentTime);
+            // ハーモニー音（サイン波で透明感）
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(harmonyFreq, audioContext.currentTime);
+            osc2.frequency.linearRampToValueAtTime(harmonyFreq * 0.9, audioContext.currentTime + 0.2);
 
-            // ボリューム設定（短くて柔らかい音）
+            // かわいい音量カーブ（ぽわんっと）
             gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.4, audioContext.currentTime + 0.01);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.3);
+            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.3, audioContext.currentTime + 0.02);
+            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.2, audioContext.currentTime + 0.08);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.25);
 
             // 接続
-            oscillator.connect(filterNode);
-            filterNode.connect(gainNode);
+            osc1.connect(gainNode);
+            osc2.connect(gainNode);
             gainNode.connect(audioContext.destination);
 
             // 再生
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.3);
+            osc1.start(audioContext.currentTime);
+            osc2.start(audioContext.currentTime);
+            osc1.stop(audioContext.currentTime + 0.25);
+            osc2.stop(audioContext.currentTime + 0.3);
         }
 
-        // フルーツマージサウンド生成
+        // かわいいフルーツマージサウンド生成
         function playMergeSound(newFruitType) {
             if (!initAudio()) return;
 
-            // メインの合体音
-            const oscillator1 = audioContext.createOscillator();
-            const oscillator2 = audioContext.createOscillator();
+            // メジャーコードで明るく
+            const rootFreqs = [523, 587, 659, 698, 784, 880, 988, 1047]; // Cメジャースケール
+            const rootFreq = rootFreqs[newFruitType % rootFreqs.length];
+
+            // メジャートライアド（ド・ミ・ソ）
+            const osc1 = audioContext.createOscillator(); // ルート
+            const osc2 = audioContext.createOscillator(); // 3度
+            const osc3 = audioContext.createOscillator(); // 5度
             const gainNode = audioContext.createGain();
-            const filterNode = audioContext.createBiquadFilter();
 
-            // 新しいフルーツに基づくハーモニック周波数
-            const fundamental = 400 + (newFruitType * 100);
-            const harmonic = fundamental * 1.5;
+            osc1.type = 'triangle';
+            osc1.frequency.setValueAtTime(rootFreq, audioContext.currentTime);
+            osc1.frequency.linearRampToValueAtTime(rootFreq * 1.2, audioContext.currentTime + 0.4);
 
-            oscillator1.type = 'triangle';
-            oscillator1.frequency.setValueAtTime(fundamental, audioContext.currentTime);
-            oscillator1.frequency.exponentialRampToValueAtTime(fundamental * 1.5, audioContext.currentTime + 0.2);
+            osc2.type = 'sine';
+            osc2.frequency.setValueAtTime(rootFreq * 1.25, audioContext.currentTime); // 長3度
+            osc2.frequency.linearRampToValueAtTime(rootFreq * 1.5, audioContext.currentTime + 0.4);
 
-            oscillator2.type = 'sine';
-            oscillator2.frequency.setValueAtTime(harmonic, audioContext.currentTime);
-            oscillator2.frequency.exponentialRampToValueAtTime(harmonic * 0.8, audioContext.currentTime + 0.4);
+            osc3.type = 'sine';
+            osc3.frequency.setValueAtTime(rootFreq * 1.5, audioContext.currentTime); // 完全5度
+            osc3.frequency.linearRampToValueAtTime(rootFreq * 1.8, audioContext.currentTime + 0.4);
 
-            // フィルター（明るい合体音）
-            filterNode.type = 'bandpass';
-            filterNode.frequency.setValueAtTime(1500, audioContext.currentTime);
-            filterNode.Q.setValueAtTime(2, audioContext.currentTime);
-
-            // ボリューム（成長する音）
+            // かわいい上昇音のエンベロープ
             gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.6, audioContext.currentTime + 0.05);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.5);
+            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.4, audioContext.currentTime + 0.05);
+            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.3, audioContext.currentTime + 0.2);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.6);
 
             // 接続
-            oscillator1.connect(filterNode);
-            oscillator2.connect(filterNode);
-            filterNode.connect(gainNode);
+            osc1.connect(gainNode);
+            osc2.connect(gainNode);
+            osc3.connect(gainNode);
             gainNode.connect(audioContext.destination);
 
             // 再生
-            oscillator1.start(audioContext.currentTime);
-            oscillator2.start(audioContext.currentTime);
-            oscillator1.stop(audioContext.currentTime + 0.5);
-            oscillator2.stop(audioContext.currentTime + 0.5);
+            osc1.start(audioContext.currentTime);
+            osc2.start(audioContext.currentTime);
+            osc3.start(audioContext.currentTime);
+            osc1.stop(audioContext.currentTime + 0.6);
+            osc2.stop(audioContext.currentTime + 0.6);
+            osc3.stop(audioContext.currentTime + 0.6);
 
-            // 追加のキラキラ音エフェクト
+            // かわいいキラキラ音
             setTimeout(() => {
-                playSparkleSound(newFruitType);
-            }, 100);
+                playKawaiiSparkleSound(newFruitType);
+            }, 150);
         }
 
-        // キラキラエフェクト音
-        function playSparkleSound(fruitType) {
+        // かわいいキラキラエフェクト音
+        function playKawaiiSparkleSound(fruitType) {
             if (!initAudio()) return;
 
-            for (let i = 0; i < 3; i++) {
+            // 高音域のペンタトニックスケールでキラキラ
+            const sparkleFreqs = [1047, 1175, 1319, 1568, 1760, 1976, 2093, 2349]; // C6からD7
+
+            for (let i = 0; i < 4; i++) {
                 setTimeout(() => {
-                    const oscillator = audioContext.createOscillator();
+                    const osc = audioContext.createOscillator();
                     const gainNode = audioContext.createGain();
 
-                    const freq = 1200 + (fruitType * 200) + (Math.random() * 400);
-                    oscillator.type = 'sine';
-                    oscillator.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    const freq = sparkleFreqs[(fruitType + i) % sparkleFreqs.length];
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+                    osc.frequency.linearRampToValueAtTime(freq * 1.1, audioContext.currentTime + 0.1);
 
+                    // キラキラのかわいい音量カーブ
                     gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(masterVolume * 0.2, audioContext.currentTime + 0.01);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+                    gainNode.gain.linearRampToValueAtTime(masterVolume * 0.15, audioContext.currentTime + 0.02);
+                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
 
-                    oscillator.connect(gainNode);
+                    osc.connect(gainNode);
                     gainNode.connect(audioContext.destination);
 
-                    oscillator.start(audioContext.currentTime);
-                    oscillator.stop(audioContext.currentTime + 0.15);
-                }, i * 50);
+                    osc.start(audioContext.currentTime);
+                    osc.stop(audioContext.currentTime + 0.2);
+                }, i * 80);
+            }
+        }
+
+        // ランキング管理関数
+        function saveRanking(playerName, score, maxFruit) {
+            const newEntry = {
+                name: playerName,
+                score: score,
+                maxFruit: maxFruit,
+                date: new Date().toLocaleDateString('ja-JP')
+            };
+
+            rankings.push(newEntry);
+            rankings.sort((a, b) => b.score - a.score);
+            rankings = rankings.slice(0, 5); // トップ5のみ保持
+
+            localStorage.setItem('suikaRankings', JSON.stringify(rankings));
+        }
+
+        function isHighScore(currentScore) {
+            return rankings.length < 5 || currentScore > rankings[rankings.length - 1].score;
+        }
+
+        function showRankingInput(score, maxFruit) {
+            const playerName = prompt('🎉 ハイスコア達成！\n\nお名前を入力してください（10文字以内）:');
+            if (playerName && playerName.trim()) {
+                const trimmedName = playerName.trim().substring(0, 10);
+                saveRanking(trimmedName, score, maxFruit);
+                showRankingDisplay();
+            }
+        }
+
+        function showRankingDisplay() {
+            let rankingHTML = '<div style="background: linear-gradient(145deg, #FFB6C1, #FFC0CB); padding: 20px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">';
+            rankingHTML += '<h3 style="color: #FF1493; text-align: center; margin-bottom: 15px; font-size: 18px;">🏆 トップ5ランキング 🏆</h3>';
+
+            if (rankings.length === 0) {
+                rankingHTML += '<p style="text-align: center; color: #FF69B4;">まだランキングがありません</p>';
+            } else {
+                rankings.forEach((entry, index) => {
+                    const medal = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][index];
+                    rankingHTML += `<div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.3); border-radius: 8px;">`;
+                    rankingHTML += `<span style="font-weight: bold; color: #FF1493;">${medal} ${entry.name}</span>`;
+                    rankingHTML += `<span style="color: #FF69B4;">${entry.score}点 ${entry.maxFruit}</span>`;
+                    rankingHTML += `</div>`;
+                });
+            }
+
+            rankingHTML += '</div>';
+
+            // ゲームオーバー画面に追加
+            const gameOverContent = document.querySelector('.game-over-content');
+            const existingRanking = gameOverContent.querySelector('.ranking-display');
+            if (existingRanking) {
+                existingRanking.remove();
+            }
+
+            const rankingDiv = document.createElement('div');
+            rankingDiv.className = 'ranking-display';
+            rankingDiv.innerHTML = rankingHTML;
+            gameOverContent.insertBefore(rankingDiv, gameOverContent.querySelector('.game-over-buttons'));
+        }
+
+        function showRankingModal() {
+            let rankingHTML = '<div id="rankingModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000;">';
+            rankingHTML += '<div style="background: linear-gradient(145deg, #FFB6C1, #FFC0CB); padding: 30px; border-radius: 20px; max-width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">';
+            rankingHTML += '<h3 style="color: #FF1493; text-align: center; margin-bottom: 20px; font-size: 20px;">🏆 トップ5ランキング 🏆</h3>';
+
+            if (rankings.length === 0) {
+                rankingHTML += '<p style="text-align: center; color: #FF69B4; margin: 20px 0;">まだランキングがありません。<br>ゲームをプレイしてランキングを作りましょう！</p>';
+            } else {
+                rankings.forEach((entry, index) => {
+                    const medal = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][index];
+                    rankingHTML += `<div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0; padding: 12px; background: rgba(255,255,255,0.4); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">`;
+                    rankingHTML += `<div style="display: flex; align-items: center; gap: 10px;"><span style="font-size: 20px;">${medal}</span><span style="font-weight: bold; color: #FF1493;">${entry.name}</span></div>`;
+                    rankingHTML += `<div style="text-align: right;"><div style="color: #FF69B4; font-weight: bold;">${entry.score}点</div><div style="font-size: 12px; color: #FF69B4;">${entry.maxFruit} ${entry.date}</div></div>`;
+                    rankingHTML += `</div>`;
+                });
+            }
+
+            rankingHTML += '<div style="text-align: center; margin-top: 20px;">';
+            rankingHTML += '<button onclick="closeRankingModal()" style="background: linear-gradient(145deg, #FF1493, #FF69B4); color: white; border: none; padding: 12px 24px; border-radius: 15px; font-size: 16px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">閉じる</button>';
+            rankingHTML += '</div></div></div>';
+
+            document.body.insertAdjacentHTML('beforeend', rankingHTML);
+        }
+
+        function closeRankingModal() {
+            const modal = document.getElementById('rankingModal');
+            if (modal) {
+                modal.remove();
             }
         }
 
@@ -1456,6 +1565,16 @@
             gameRunning = false;
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalMaxFruit').textContent = FRUITS[maxFruitReached].emoji;
+
+            // ハイスコアチェック
+            if (isHighScore(score)) {
+                setTimeout(() => {
+                    showRankingInput(score, FRUITS[maxFruitReached].emoji);
+                }, 500); // 少し遅らせてゲームオーバー画面が表示されてから
+            } else {
+                showRankingDisplay(); // 既存のランキングを表示
+            }
+
             document.getElementById('gameOver').style.display = 'flex';
         }
 
@@ -1559,6 +1678,7 @@
             gameRunning = !gameRunning;
             document.getElementById('pauseBtn').textContent = gameRunning ? '一時停止' : '再開';
         });
+        document.getElementById('rankingBtn').addEventListener('click', showRankingModal);
         document.getElementById('shareBtn').addEventListener('click', shareGame);
         document.getElementById('restartBtn').addEventListener('click', startGame);
         document.getElementById('shareScoreBtn').addEventListener('click', shareScore);
