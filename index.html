@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>スイカゲーム - LINE</title>
+    <title>🍉 かわいいスイカゲーム 🍉</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
@@ -17,14 +17,16 @@
         }
 
         body {
-            font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #00c851 0%, #00b74a 50%, #009739 100%);
+            font-family: 'Comic Sans MS', 'Arial', cursive;
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 25%, #FFCCCB 50%, #FFE4E1 75%, #F0E68C 100%);
+            background-size: 400% 400%;
+            animation: kawaii-gradient 8s ease infinite;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             height: 100vh;
-            color: white;
+            color: #FF69B4;
             overflow: hidden;
             position: fixed;
             width: 100%;
@@ -36,13 +38,19 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        @keyframes kawaii-gradient {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
         .loading {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #00c851 0%, #00b74a 100%);
+            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -52,23 +60,36 @@
 
         .loading h2 {
             margin-bottom: 20px;
-            color: white;
+            color: #FF1493;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.5);
+        }
+
+        .loading h2::before {
+            content: '🌸 ';
+        }
+
+        .loading h2::after {
+            content: ' 🌸';
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-            border-top: 4px solid white;
+            border: 4px solid rgba(255, 182, 193, 0.3);
+            border-top: 4px solid #FF69B4;
             border-radius: 50%;
-            animation: spin 1s linear infinite;
+            animation: kawaii-spin 1.5s ease-in-out infinite;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        @keyframes kawaii-spin {
+            0% { transform: rotate(0deg) scale(1); }
+            50% { transform: rotate(180deg) scale(1.1); }
+            100% { transform: rotate(360deg) scale(1); }
         }
 
+        
         .game-container {
             display: flex;
             flex-direction: column;
@@ -85,31 +106,76 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 182, 193, 0.8));
+            padding: 15px;
+            border-radius: 25px;
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(255, 105, 180, 0.4);
+            box-shadow: 0 8px 32px rgba(255, 182, 193, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-info::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: kawaii-shine 3s linear infinite;
+        }
+
+        @keyframes kawaii-shine {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
         }
 
         .user-avatar {
-            width: 40px;
-            height: 40px;
+            width: 45px;
+            height: 45px;
             border-radius: 50%;
-            border: 2px solid white;
+            border: 3px solid #FF69B4;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1) rotate(5deg);
         }
 
         .user-name {
             font-weight: bold;
-            color: white;
+            color: #FF1493;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+            font-size: 16px;
         }
 
         .game-board {
-            background: rgba(255, 255, 255, 0.9);
-            border: 4px solid #00c851;
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 245, 0.9));
+            border: 4px solid #FF69B4;
+            border-radius: 25px;
+            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
             position: relative;
+            overflow: hidden;
+        }
+
+        .game-board::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23FFB6C1" opacity="0.3"/><circle cx="80" cy="30" r="1.5" fill="%23FFC0CB" opacity="0.4"/><circle cx="60" cy="70" r="1" fill="%23FF69B4" opacity="0.2"/><circle cx="30" cy="80" r="1.5" fill="%23FFB6C1" opacity="0.3"/></svg>') repeat;
+            animation: kawaii-float 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes kawaii-float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
         }
 
         canvas {
@@ -120,21 +186,45 @@
         .drop-line {
             position: absolute;
             top: 50px;
-            width: 2px;
-            height: 20px;
-            background: rgba(0, 200, 81, 0.8);
+            width: 3px;
+            height: 25px;
+            background: linear-gradient(180deg, #FF69B4, #FFB6C1);
+            border-radius: 2px;
             pointer-events: none;
             z-index: 10;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
+            animation: kawaii-pulse 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes kawaii-pulse {
+            0% { opacity: 0.6; transform: scaleY(1); }
+            100% { opacity: 1; transform: scaleY(1.1); }
         }
 
         .game-info {
             display: flex;
-            gap: 15px;
-            background: rgba(255, 255, 255, 0.2);
-            padding: 10px;
-            border-radius: 15px;
-            backdrop-filter: blur(10px);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            gap: 20px;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 182, 193, 0.7));
+            padding: 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(15px);
+            border: 3px solid rgba(255, 105, 180, 0.4);
+            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.3);
+            position: relative;
+        }
+
+        .game-info::after {
+            content: '✨';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            font-size: 16px;
+            animation: kawaii-sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes kawaii-sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
+            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
         }
 
         .info-panel {
@@ -142,18 +232,24 @@
         }
 
         .info-panel h3 {
-            margin-bottom: 5px;
-            font-size: 12px;
+            margin-bottom: 8px;
+            font-size: 13px;
             opacity: 0.9;
-            color: #00c851;
+            color: #FF1493;
             font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
         }
 
         .info-panel .value {
-            font-size: 20px;
+            font-size: 22px;
             font-weight: bold;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            color: #FF69B4;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 105, 180, 0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .info-panel .value:hover {
+            transform: scale(1.1);
         }
 
         .controls {
@@ -165,48 +261,101 @@
         }
 
         .control-btn {
-            background: linear-gradient(145deg, #00c851, #00b74a);
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: linear-gradient(145deg, #FF69B4, #FFB6C1);
+            border: 3px solid rgba(255, 255, 255, 0.6);
             color: white;
-            padding: 12px 20px;
-            border-radius: 15px;
+            padding: 14px 22px;
+            border-radius: 20px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.2s;
-            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            backdrop-filter: blur(15px);
             user-select: none;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .control-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .control-btn:active::before {
+            width: 300px;
+            height: 300px;
         }
 
         .control-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(255, 105, 180, 0.4);
+            background: linear-gradient(145deg, #FF1493, #FF69B4);
         }
 
         .control-btn:active {
-            transform: translateY(0);
+            transform: translateY(-1px) scale(0.98);
         }
 
         .share-btn {
-            background: linear-gradient(145deg, #1DB446, #00c851);
+            background: linear-gradient(145deg, #FF1493, #FF69B4);
+            position: relative;
+        }
+
+        .share-btn::after {
+            content: '💕';
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 12px;
+            animation: kawaii-heart 1.5s ease-in-out infinite;
+        }
+
+        @keyframes kawaii-heart {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
         .next-fruit {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: rgba(255, 255, 255, 0.9);
-            border-radius: 10px;
-            padding: 8px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 245, 0.9));
+            border-radius: 15px;
+            padding: 12px;
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.2);
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            animation: kawaii-bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes kawaii-bounce {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-5px); }
         }
 
         .next-fruit h4 {
-            font-size: 10px;
-            color: #00c851;
-            margin-bottom: 5px;
+            font-size: 11px;
+            color: #FF1493;
+            margin-bottom: 8px;
             text-align: center;
+            font-weight: bold;
+            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
+        }
+
+        .next-fruit h4::before {
+            content: '🌟 ';
+        }
+
+        .next-fruit h4::after {
+            content: ' 🌟';
         }
 
         .game-over {
@@ -223,13 +372,30 @@
         }
 
         .game-over-content {
-            background: linear-gradient(145deg, #00c851, #00b74a);
+            background: linear-gradient(145deg, #FF69B4, #FFB6C1);
             color: white;
-            padding: 30px;
-            border-radius: 25px;
+            padding: 35px;
+            border-radius: 30px;
             text-align: center;
-            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
-            border: 3px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 30px 60px rgba(255, 105, 180, 0.4);
+            border: 4px solid rgba(255, 255, 255, 0.5);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-over-content::before {
+            content: '💔';
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            animation: kawaii-sad 1s ease-in-out infinite alternate;
+        }
+
+        @keyframes kawaii-sad {
+            0% { transform: translateX(-50%) translateY(0px); }
+            100% { transform: translateX(-50%) translateY(-5px); }
         }
 
         .game-over-buttons {
@@ -240,14 +406,33 @@
         }
 
         .restart-btn, .share-score-btn {
-            background: linear-gradient(145deg, #1DB446, #00c851);
+            background: linear-gradient(145deg, #FF1493, #FF69B4);
             color: white;
-            border: none;
-            padding: 12px 20px;
-            border-radius: 15px;
-            font-size: 14px;
+            border: 3px solid rgba(255, 255, 255, 0.4);
+            padding: 14px 24px;
+            border-radius: 20px;
+            font-size: 15px;
+            font-weight: bold;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .restart-btn:hover, .share-score-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 12px 25px rgba(255, 105, 180, 0.4);
+        }
+
+        .restart-btn::before {
+            content: '🌸';
+            margin-right: 8px;
+        }
+
+        .share-score-btn::before {
+            content: '💕';
+            margin-right: 8px;
         }
 
         @media (max-width: 480px) {
@@ -358,17 +543,17 @@
         let userProfile = null;
 
         const FRUITS = [
-            { emoji: '🍇', size: 18, color: '#9966cc', points: 1 },
-            { emoji: '🍒', size: 22, color: '#dc143c', points: 3 },
-            { emoji: '🍓', size: 26, color: '#ff1493', points: 6 },
-            { emoji: '🍑', size: 30, color: '#ff6347', points: 10 },
-            { emoji: '🍊', size: 34, color: '#ff8c00', points: 15 },
-            { emoji: '🍎', size: 38, color: '#ff0000', points: 21 },
-            { emoji: '🍐', size: 42, color: '#9acd32', points: 28 },
-            { emoji: '🍍', size: 46, color: '#ffd700', points: 36 },
-            { emoji: '🥭', size: 50, color: '#ff8c69', points: 45 },
-            { emoji: '🍈', size: 54, color: '#98fb98', points: 55 },
-            { emoji: '🍉', size: 58, color: '#ff6b6b', points: 66 }
+            { emoji: '🍇', size: 18, color: '#E6B3FF', points: 1 },      // Lavender
+            { emoji: '🍒', size: 22, color: '#FFB3B3', points: 3 },      // Light Pink
+            { emoji: '🍓', size: 26, color: '#FFB3D9', points: 6 },      // Baby Pink
+            { emoji: '🍑', size: 30, color: '#FFCCB3', points: 10 },     // Peach
+            { emoji: '🍊', size: 34, color: '#FFE6B3', points: 15 },     // Light Orange
+            { emoji: '🍎', size: 38, color: '#FFB3B3', points: 21 },     // Light Red
+            { emoji: '🍐', size: 42, color: '#D9FFB3', points: 28 },     // Light Green
+            { emoji: '🍍', size: 46, color: '#FFFFB3', points: 36 },     // Light Yellow
+            { emoji: '🥭', size: 50, color: '#FFD9B3', points: 45 },     // Light Mango
+            { emoji: '🍈', size: 54, color: '#B3FFD9', points: 55 },     // Light Mint
+            { emoji: '🍉', size: 58, color: '#FFB3CC', points: 66 }      // Pink Watermelon
         ];
 
         const CONTAINER_WIDTH = 350;
@@ -425,15 +610,15 @@
 
             const ground = Bodies.rectangle(CONTAINER_WIDTH / 2, CONTAINER_HEIGHT - WALL_THICKNESS / 2, CONTAINER_WIDTH, WALL_THICKNESS, {
                 isStatic: true,
-                render: { fillStyle: '#00c851' }
+                render: { fillStyle: '#FFB6C1' }
             });
             const leftWall = Bodies.rectangle(WALL_THICKNESS / 2, CONTAINER_HEIGHT / 2, WALL_THICKNESS, CONTAINER_HEIGHT, {
                 isStatic: true,
-                render: { fillStyle: '#00c851' }
+                render: { fillStyle: '#FFB6C1' }
             });
             const rightWall = Bodies.rectangle(CONTAINER_WIDTH - WALL_THICKNESS / 2, CONTAINER_HEIGHT / 2, WALL_THICKNESS, CONTAINER_HEIGHT, {
                 isStatic: true,
-                render: { fillStyle: '#00c851' }
+                render: { fillStyle: '#FFB6C1' }
             });
 
             World.add(world, [ground, leftWall, rightWall]);
@@ -453,8 +638,8 @@
                 density: 0.001,
                 render: {
                     fillStyle: fruit.color,
-                    strokeStyle: '#ffffff',
-                    lineWidth: 2
+                    strokeStyle: '#FF69B4',
+                    lineWidth: 3
                 }
             });
 
@@ -462,7 +647,47 @@
             body.isFruit = true;
 
             World.add(world, body);
+
+            // Add cute drop effect when fruit is created
+            if (y <= 60) { // Only for newly dropped fruits
+                createDropEffect(x, y);
+            }
+
             return body;
+        }
+
+        function createDropEffect(x, y) {
+            // Create rainbow trail effect
+            for (let i = 0; i < 5; i++) {
+                setTimeout(() => {
+                    const trail = document.createElement('div');
+                    trail.innerHTML = '🌟';
+                    trail.style.position = 'absolute';
+                    trail.style.fontSize = '12px';
+                    trail.style.pointerEvents = 'none';
+                    trail.style.zIndex = '999';
+                    trail.style.left = (x + (Math.random() - 0.5) * 20) + 'px';
+                    trail.style.top = (y - i * 5) + 'px';
+
+                    document.body.appendChild(trail);
+
+                    trail.animate([
+                        {
+                            transform: 'translate(-50%, -50%) scale(1)',
+                            opacity: 0.8
+                        },
+                        {
+                            transform: 'translate(-50%, 50px) scale(0.3)',
+                            opacity: 0
+                        }
+                    ], {
+                        duration: 600,
+                        easing: 'ease-out'
+                    }).addEventListener('finish', () => {
+                        trail.remove();
+                    });
+                }, i * 100);
+            }
         }
 
         function handleCollisions(event) {
@@ -496,13 +721,80 @@
         }
 
         function createMergeEffect(x, y) {
-            ctx.save();
-            ctx.globalAlpha = 0.8;
-            ctx.fillStyle = '#ffff00';
-            ctx.beginPath();
-            ctx.arc(x, y, 25, 0, Math.PI * 2);
-            ctx.fill();
-            ctx.restore();
+            // Create multiple sparkle effects
+            for (let i = 0; i < 8; i++) {
+                createSparkle(x, y, i);
+            }
+
+            // Create heart effect
+            createHeartEffect(x, y);
+        }
+
+        function createSparkle(centerX, centerY, index) {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.position = 'absolute';
+            sparkle.style.fontSize = '16px';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.zIndex = '1000';
+
+            const angle = (index / 8) * Math.PI * 2;
+            const distance = 30 + Math.random() * 20;
+            const startX = centerX + Math.cos(angle) * 10;
+            const startY = centerY + Math.sin(angle) * 10;
+            const endX = centerX + Math.cos(angle) * distance;
+            const endY = centerY + Math.sin(angle) * distance;
+
+            sparkle.style.left = startX + 'px';
+            sparkle.style.top = startY + 'px';
+
+            document.body.appendChild(sparkle);
+
+            // Animate sparkle
+            sparkle.animate([
+                {
+                    transform: 'translate(0, 0) scale(0.5) rotate(0deg)',
+                    opacity: 1
+                },
+                {
+                    transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1.2) rotate(360deg)`,
+                    opacity: 0
+                }
+            ], {
+                duration: 800,
+                easing: 'ease-out'
+            }).addEventListener('finish', () => {
+                sparkle.remove();
+            });
+        }
+
+        function createHeartEffect(x, y) {
+            const heart = document.createElement('div');
+            heart.innerHTML = '💕';
+            heart.style.position = 'absolute';
+            heart.style.fontSize = '24px';
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '1000';
+            heart.style.left = x + 'px';
+            heart.style.top = y + 'px';
+
+            document.body.appendChild(heart);
+
+            heart.animate([
+                {
+                    transform: 'translate(-50%, -50%) scale(0.5)',
+                    opacity: 1
+                },
+                {
+                    transform: 'translate(-50%, -150%) scale(1.5)',
+                    opacity: 0
+                }
+            ], {
+                duration: 1000,
+                easing: 'ease-out'
+            }).addEventListener('finish', () => {
+                heart.remove();
+            });
         }
 
         function dropFruit() {
