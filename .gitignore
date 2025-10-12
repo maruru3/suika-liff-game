@@ -1,0 +1,27 @@
+# Temporary files
+*.tmp
+*.temp
+
+# Development files
+https_server.py
+icosahedron_rotation.py
+
+# SSL certificates
+*.pem
+*.crt
+*.key
+
+# Virtual environment
+.venv/
+venv/
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
