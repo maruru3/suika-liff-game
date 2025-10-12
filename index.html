@@ -543,22 +543,250 @@
         let userProfile = null;
 
         const FRUITS = [
-            { emoji: '🍇', size: 18, color: '#E6B3FF', points: 1 },      // Lavender
-            { emoji: '🍒', size: 22, color: '#FFB3B3', points: 3 },      // Light Pink
-            { emoji: '🍓', size: 26, color: '#FFB3D9', points: 6 },      // Baby Pink
-            { emoji: '🍑', size: 30, color: '#FFCCB3', points: 10 },     // Peach
-            { emoji: '🍊', size: 34, color: '#FFE6B3', points: 15 },     // Light Orange
-            { emoji: '🍎', size: 38, color: '#FFB3B3', points: 21 },     // Light Red
-            { emoji: '🍐', size: 42, color: '#D9FFB3', points: 28 },     // Light Green
-            { emoji: '🍍', size: 46, color: '#FFFFB3', points: 36 },     // Light Yellow
-            { emoji: '🥭', size: 50, color: '#FFD9B3', points: 45 },     // Light Mango
-            { emoji: '🍈', size: 54, color: '#B3FFD9', points: 55 },     // Light Mint
-            { emoji: '🍉', size: 58, color: '#FFB3CC', points: 66 }      // Pink Watermelon
+            {
+                emoji: '🍇', size: 18, color: '#E6B3FF', points: 1,
+                shape: 'cluster',
+                vertices: generateGrapeShape(18),
+                density: 0.0008,
+                restitution: 0.4
+            },
+            {
+                emoji: '🍒', size: 22, color: '#FFB3B3', points: 3,
+                shape: 'cherry',
+                vertices: generateCherryShape(22),
+                density: 0.0009,
+                restitution: 0.5
+            },
+            {
+                emoji: '🍓', size: 26, color: '#FFB3D9', points: 6,
+                shape: 'strawberry',
+                vertices: generateStrawberryShape(26),
+                density: 0.001,
+                restitution: 0.3
+            },
+            {
+                emoji: '🍑', size: 30, color: '#FFCCB3', points: 10,
+                shape: 'heart',
+                vertices: generateHeartShape(30),
+                density: 0.001,
+                restitution: 0.4
+            },
+            {
+                emoji: '🍊', size: 34, color: '#FFE6B3', points: 15,
+                shape: 'oval',
+                vertices: generateOvalShape(34, 0.9),
+                density: 0.0011,
+                restitution: 0.6
+            },
+            {
+                emoji: '🍎', size: 38, color: '#FFB3B3', points: 21,
+                shape: 'apple',
+                vertices: generateAppleShape(38),
+                density: 0.0012,
+                restitution: 0.5
+            },
+            {
+                emoji: '🍐', size: 42, color: '#D9FFB3', points: 28,
+                shape: 'pear',
+                vertices: generatePearShape(42),
+                density: 0.0013,
+                restitution: 0.4
+            },
+            {
+                emoji: '🍍', size: 46, color: '#FFFFB3', points: 36,
+                shape: 'pineapple',
+                vertices: generatePineappleShape(46),
+                density: 0.0014,
+                restitution: 0.3
+            },
+            {
+                emoji: '🥭', size: 50, color: '#FFD9B3', points: 45,
+                shape: 'mango',
+                vertices: generateMangoShape(50),
+                density: 0.0015,
+                restitution: 0.4
+            },
+            {
+                emoji: '🍈', size: 54, color: '#B3FFD9', points: 55,
+                shape: 'oval',
+                vertices: generateOvalShape(54, 0.8),
+                density: 0.0016,
+                restitution: 0.5
+            },
+            {
+                emoji: '🍉', size: 58, color: '#FFB3CC', points: 66,
+                shape: 'circle',
+                vertices: null,
+                density: 0.0018,
+                restitution: 0.6
+            }
         ];
 
         const CONTAINER_WIDTH = 350;
         const CONTAINER_HEIGHT = 500;
         const WALL_THICKNESS = 10;
+
+        // フルーツ形状生成関数
+        function generateGrapeShape(size) {
+            // ブドウ型 - 複数の円を組み合わせた効果のための不規則な円
+            const vertices = [];
+            const sides = 12;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                const radius = size * (0.8 + Math.sin(angle * 3) * 0.2);
+                vertices.push({
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius
+                });
+            }
+            return vertices;
+        }
+
+        function generateCherryShape(size) {
+            // チェリー型 - 少し縦に伸びた円
+            const vertices = [];
+            const sides = 16;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                const radiusX = size * 0.9;
+                const radiusY = size * 1.1;
+                vertices.push({
+                    x: Math.cos(angle) * radiusX,
+                    y: Math.sin(angle) * radiusY
+                });
+            }
+            return vertices;
+        }
+
+        function generateStrawberryShape(size) {
+            // イチゴ型 - 三角形に近い形
+            const vertices = [];
+            const sides = 12;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                let radius = size;
+
+                // 上部を尖らせる
+                if (angle > Math.PI * 0.2 && angle < Math.PI * 0.8) {
+                    radius *= 0.7;
+                }
+
+                vertices.push({
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius
+                });
+            }
+            return vertices;
+        }
+
+        function generateHeartShape(size) {
+            // ハート型（桃）
+            const vertices = [];
+            const sides = 20;
+            for (let i = 0; i < sides; i++) {
+                const t = (i / sides) * Math.PI * 2;
+                const x = size * 0.8 * (16 * Math.sin(t) ** 3) / 16;
+                const y = size * 0.8 * (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t)) / 16;
+                vertices.push({ x: x, y: -y }); // 上下反転
+            }
+            return vertices;
+        }
+
+        function generateOvalShape(size, ratio) {
+            // 楕円形
+            const vertices = [];
+            const sides = 16;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                vertices.push({
+                    x: Math.cos(angle) * size,
+                    y: Math.sin(angle) * size * ratio
+                });
+            }
+            return vertices;
+        }
+
+        function generateAppleShape(size) {
+            // リンゴ型 - 上部が少しへこんだ円
+            const vertices = [];
+            const sides = 16;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                let radius = size;
+
+                // 上部にへこみを作る
+                if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
+                    radius *= 0.8;
+                }
+
+                vertices.push({
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius
+                });
+            }
+            return vertices;
+        }
+
+        function generatePearShape(size) {
+            // 洋梨型 - 下が細く上が太い
+            const vertices = [];
+            const sides = 16;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                let radius = size;
+
+                // 下部を細くする
+                if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
+                    radius *= 0.6;
+                }
+                // 上部を太くする
+                else if (angle > Math.PI * 1.8 || angle < Math.PI * 0.2) {
+                    radius *= 1.2;
+                }
+
+                vertices.push({
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius
+                });
+            }
+            return vertices;
+        }
+
+        function generatePineappleShape(size) {
+            // パイナップル型 - 楕円形
+            const vertices = [];
+            const sides = 12;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                const radiusX = size * 0.8;
+                const radiusY = size * 1.2;
+                vertices.push({
+                    x: Math.cos(angle) * radiusX,
+                    y: Math.sin(angle) * radiusY
+                });
+            }
+            return vertices;
+        }
+
+        function generateMangoShape(size) {
+            // マンゴー型 - 非対称の楕円
+            const vertices = [];
+            const sides = 14;
+            for (let i = 0; i < sides; i++) {
+                const angle = (i / sides) * Math.PI * 2;
+                let radiusX = size * 0.9;
+                let radiusY = size * 1.1;
+
+                // 一方向に少し傾ける
+                const skew = Math.sin(angle) * 0.1;
+
+                vertices.push({
+                    x: Math.cos(angle) * radiusX + skew * radiusX,
+                    y: Math.sin(angle) * radiusY
+                });
+            }
+            return vertices;
+        }
 
         // LIFF初期化
         async function initLiff() {
@@ -627,29 +855,112 @@
             Runner.run(runner, engine);
             Render.run(render);
 
+            // カスタムレンダリング：フルーツの上に絵文字を描画
+            Events.on(render, 'afterRender', function() {
+                const ctx = render.canvas.getContext('2d');
+                const bodies = world.bodies;
+
+                bodies.forEach(body => {
+                    if (body.isFruit) {
+                        const fruit = FRUITS[body.fruitType];
+
+                        // フルーツの位置と回転を取得
+                        const pos = body.position;
+                        const angle = body.angle;
+
+                        // コンテキストを保存
+                        ctx.save();
+
+                        // フルーツの中心に移動して回転
+                        ctx.translate(pos.x, pos.y);
+                        ctx.rotate(angle);
+
+                        // 絵文字のサイズを調整
+                        const emojiSize = fruit.size * 1.2;
+                        ctx.font = `${emojiSize}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+
+                        // 影をつける
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                        ctx.shadowBlur = 4;
+                        ctx.shadowOffsetX = 2;
+                        ctx.shadowOffsetY = 2;
+
+                        // 絵文字を描画
+                        ctx.fillText(fruit.emoji, 0, 0);
+
+                        // コンテキストを復元
+                        ctx.restore();
+                    }
+                });
+            });
+
             Events.on(engine, 'collisionStart', handleCollisions);
         }
 
         function createFruit(x, y, type) {
             const fruit = FRUITS[type];
-            const body = Bodies.circle(x, y, fruit.size, {
-                restitution: 0.3,
-                friction: 0.5,
-                density: 0.001,
-                render: {
-                    fillStyle: fruit.color,
-                    strokeStyle: '#FF69B4',
-                    lineWidth: 3
-                }
-            });
+            let body;
 
+            // フルーツの形状に応じてボディを作成
+            if (fruit.shape === 'circle') {
+                // 円形（スイカなど）
+                body = Bodies.circle(x, y, fruit.size, {
+                    restitution: fruit.restitution,
+                    friction: 0.5,
+                    density: fruit.density,
+                    render: {
+                        fillStyle: fruit.color,
+                        strokeStyle: '#FF69B4',
+                        lineWidth: 3
+                    }
+                });
+            } else {
+                // 複雑な形状
+                try {
+                    body = Bodies.fromVertices(x, y, fruit.vertices, {
+                        restitution: fruit.restitution,
+                        friction: 0.6,
+                        density: fruit.density,
+                        render: {
+                            fillStyle: fruit.color,
+                            strokeStyle: '#FF69B4',
+                            lineWidth: 3
+                        }
+                    });
+                } catch (error) {
+                    console.log(`Error creating ${fruit.emoji} shape, falling back to circle:`, error);
+                    // フォールバック：円形を使用
+                    body = Bodies.circle(x, y, fruit.size, {
+                        restitution: fruit.restitution,
+                        friction: 0.5,
+                        density: fruit.density,
+                        render: {
+                            fillStyle: fruit.color,
+                            strokeStyle: '#FF69B4',
+                            lineWidth: 3
+                        }
+                    });
+                }
+            }
+
+            // フルーツの識別情報を追加
             body.fruitType = type;
             body.isFruit = true;
 
+            // 自然な回転を追加（落下時のみ）
+            if (y <= 60) {
+                Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.3);
+            }
+
+            // 慣性を調整（回転しやすくする）
+            Body.setInertia(body, body.inertia * 0.8);
+
             World.add(world, body);
 
-            // Add cute drop effect when fruit is created
-            if (y <= 60) { // Only for newly dropped fruits
+            // かわいいドロップエフェクト
+            if (y <= 60) { // 新しく落とされたフルーツのみ
                 createDropEffect(x, y);
             }
 
