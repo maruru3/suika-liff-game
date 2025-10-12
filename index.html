@@ -797,14 +797,21 @@
             });
         }
 
-        function dropFruit() {
+        function dropFruit(x = mouseX) {
             if (!gameRunning || currentFruit) return;
 
+            // Ensure drop position is within bounds
+            const dropX = Math.max(30, Math.min(CONTAINER_WIDTH - 30, x));
+
             const type = nextFruitType;
-            currentFruit = createFruit(mouseX, 50, type);
+            currentFruit = createFruit(dropX, 50, type);
 
             nextFruitType = Math.floor(Math.random() * Math.min(5, FRUITS.length));
             updateNextFruit();
+
+            // Update drop line position to match drop location
+            mouseX = dropX;
+            updateDropLine();
 
             dropTimeout = setTimeout(() => {
                 currentFruit = null;
@@ -893,13 +900,15 @@
         canvas.addEventListener('mousemove', (e) => {
             if (!gameRunning) return;
             const rect = canvas.getBoundingClientRect();
-            mouseX = Math.max(25, Math.min(CONTAINER_WIDTH - 25, e.clientX - rect.left));
+            mouseX = Math.max(30, Math.min(CONTAINER_WIDTH - 30, e.clientX - rect.left));
             updateDropLine();
         });
 
         canvas.addEventListener('click', (e) => {
             if (gameRunning) {
-                dropFruit();
+                const rect = canvas.getBoundingClientRect();
+                const clickX = e.clientX - rect.left;
+                dropFruit(clickX);
             }
         });
 
@@ -908,18 +917,21 @@
             if (!gameRunning) return;
             const rect = canvas.getBoundingClientRect();
             const touch = e.touches[0];
-            mouseX = Math.max(25, Math.min(CONTAINER_WIDTH - 25, touch.clientX - rect.left));
+            mouseX = Math.max(30, Math.min(CONTAINER_WIDTH - 30, touch.clientX - rect.left));
             updateDropLine();
         });
 
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (gameRunning) {
-                dropFruit();
+                const rect = canvas.getBoundingClientRect();
+                const touch = e.touches[0];
+                const touchX = touch.clientX - rect.left;
+                dropFruit(touchX);
             }
         });
 
-        document.getElementById('dropBtn').addEventListener('click', dropFruit);
+        document.getElementById('dropBtn').addEventListener('click', () => dropFruit());
         document.getElementById('pauseBtn').addEventListener('click', () => {
             gameRunning = !gameRunning;
             document.getElementById('pauseBtn').textContent = gameRunning ? '一時停止' : '再開';
