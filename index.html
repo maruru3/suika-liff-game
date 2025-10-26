@@ -6,7 +6,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="mobile-web-app-capable" content="yes">
-    <title>🍉 かわいいスイカゲーム 🍉</title>
+    <title>スイカゲーム - LINE</title>
     <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
@@ -17,16 +17,14 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', 'Arial', cursive;
-            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 25%, #FFCCCB 50%, #FFE4E1 75%, #F0E68C 100%);
-            background-size: 400% 400%;
-            animation: kawaii-gradient 8s ease infinite;
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #00c851 0%, #00b74a 50%, #009739 100%);
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             height: 100vh;
-            color: #FF69B4;
+            color: white;
             overflow: hidden;
             position: fixed;
             width: 100%;
@@ -38,19 +36,13 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        @keyframes kawaii-gradient {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-
         .loading {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: linear-gradient(135deg, #FFB6C1 0%, #FFC0CB 100%);
+            background: linear-gradient(135deg, #00c851 0%, #00b74a 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -60,36 +52,23 @@
 
         .loading h2 {
             margin-bottom: 20px;
-            color: #FF1493;
-            font-size: 24px;
-            text-shadow: 2px 2px 4px rgba(255, 182, 193, 0.5);
-        }
-
-        .loading h2::before {
-            content: '🌸 ';
-        }
-
-        .loading h2::after {
-            content: ' 🌸';
+            color: white;
         }
 
         .spinner {
             width: 40px;
             height: 40px;
-            border: 4px solid rgba(255, 182, 193, 0.3);
-            border-top: 4px solid #FF69B4;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
             border-radius: 50%;
-            animation: kawaii-spin 1.5s ease-in-out infinite;
-            box-shadow: 0 0 20px rgba(255, 105, 180, 0.3);
+            animation: spin 1s linear infinite;
         }
 
-        @keyframes kawaii-spin {
-            0% { transform: rotate(0deg) scale(1); }
-            50% { transform: rotate(180deg) scale(1.1); }
-            100% { transform: rotate(360deg) scale(1); }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
 
-        
         .game-container {
             display: flex;
             flex-direction: column;
@@ -106,76 +85,31 @@
             display: flex;
             align-items: center;
             gap: 10px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 182, 193, 0.8));
-            padding: 15px;
-            border-radius: 25px;
-            backdrop-filter: blur(15px);
-            border: 3px solid rgba(255, 105, 180, 0.4);
-            box-shadow: 0 8px 32px rgba(255, 182, 193, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .user-info::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-            animation: kawaii-shine 3s linear infinite;
-        }
-
-        @keyframes kawaii-shine {
-            0% { transform: translateX(-100%) translateY(-100%) rotate(30deg); }
-            100% { transform: translateX(100%) translateY(100%) rotate(30deg); }
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         .user-avatar {
-            width: 45px;
-            height: 45px;
+            width: 40px;
+            height: 40px;
             border-radius: 50%;
-            border: 3px solid #FF69B4;
-            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.4);
-            transition: transform 0.3s ease;
-        }
-
-        .user-avatar:hover {
-            transform: scale(1.1) rotate(5deg);
+            border: 2px solid white;
         }
 
         .user-name {
             font-weight: bold;
-            color: #FF1493;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-            font-size: 16px;
+            color: white;
         }
 
         .game-board {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 245, 0.9));
-            border: 4px solid #FF69B4;
-            border-radius: 25px;
-            box-shadow: 0 20px 40px rgba(255, 105, 180, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            background: rgba(255, 255, 255, 0.9);
+            border: 4px solid #00c851;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
             position: relative;
-            overflow: hidden;
-        }
-
-        .game-board::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="20" cy="20" r="2" fill="%23FFB6C1" opacity="0.3"/><circle cx="80" cy="30" r="1.5" fill="%23FFC0CB" opacity="0.4"/><circle cx="60" cy="70" r="1" fill="%23FF69B4" opacity="0.2"/><circle cx="30" cy="80" r="1.5" fill="%23FFB6C1" opacity="0.3"/></svg>') repeat;
-            animation: kawaii-float 6s ease-in-out infinite;
-            pointer-events: none;
-        }
-
-        @keyframes kawaii-float {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
         }
 
         canvas {
@@ -186,45 +120,21 @@
         .drop-line {
             position: absolute;
             top: 50px;
-            width: 3px;
-            height: 25px;
-            background: linear-gradient(180deg, #FF69B4, #FFB6C1);
-            border-radius: 2px;
+            width: 2px;
+            height: 20px;
+            background: rgba(0, 200, 81, 0.8);
             pointer-events: none;
             z-index: 10;
-            box-shadow: 0 0 10px rgba(255, 105, 180, 0.6);
-            animation: kawaii-pulse 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes kawaii-pulse {
-            0% { opacity: 0.6; transform: scaleY(1); }
-            100% { opacity: 1; transform: scaleY(1.1); }
         }
 
         .game-info {
             display: flex;
-            gap: 20px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 182, 193, 0.7));
-            padding: 15px;
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
-            border: 3px solid rgba(255, 105, 180, 0.4);
-            box-shadow: 0 10px 25px rgba(255, 182, 193, 0.3);
-            position: relative;
-        }
-
-        .game-info::after {
-            content: '✨';
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            font-size: 16px;
-            animation: kawaii-sparkle 2s ease-in-out infinite;
-        }
-
-        @keyframes kawaii-sparkle {
-            0%, 100% { transform: scale(1) rotate(0deg); opacity: 0.7; }
-            50% { transform: scale(1.2) rotate(180deg); opacity: 1; }
+            gap: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
         }
 
         .info-panel {
@@ -232,24 +142,18 @@
         }
 
         .info-panel h3 {
-            margin-bottom: 8px;
-            font-size: 13px;
+            margin-bottom: 5px;
+            font-size: 12px;
             opacity: 0.9;
-            color: #FF1493;
+            color: #00c851;
             font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
         }
 
         .info-panel .value {
-            font-size: 22px;
+            font-size: 20px;
             font-weight: bold;
-            color: #FF69B4;
-            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.8), 0 0 10px rgba(255, 105, 180, 0.4);
-            transition: transform 0.3s ease;
-        }
-
-        .info-panel .value:hover {
-            transform: scale(1.1);
+            color: white;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
 
         .controls {
@@ -261,101 +165,48 @@
         }
 
         .control-btn {
-            background: linear-gradient(145deg, #FF69B4, #FFB6C1);
-            border: 3px solid rgba(255, 255, 255, 0.6);
+            background: linear-gradient(145deg, #00c851, #00b74a);
+            border: 2px solid rgba(255, 255, 255, 0.3);
             color: white;
-            padding: 14px 22px;
-            border-radius: 20px;
+            padding: 12px 20px;
+            border-radius: 15px;
             font-size: 14px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(15px);
+            transition: all 0.2s;
+            backdrop-filter: blur(10px);
             user-select: none;
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .control-btn::before {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s, height 0.6s;
-        }
-
-        .control-btn:active::before {
-            width: 300px;
-            height: 300px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         .control-btn:hover {
-            transform: translateY(-3px) scale(1.05);
-            box-shadow: 0 12px 25px rgba(255, 105, 180, 0.4);
-            background: linear-gradient(145deg, #FF1493, #FF69B4);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
 
         .control-btn:active {
-            transform: translateY(-1px) scale(0.98);
+            transform: translateY(0);
         }
 
         .share-btn {
-            background: linear-gradient(145deg, #FF1493, #FF69B4);
-            position: relative;
-        }
-
-        .share-btn::after {
-            content: '💕';
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            font-size: 12px;
-            animation: kawaii-heart 1.5s ease-in-out infinite;
-        }
-
-        @keyframes kawaii-heart {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
+            background: linear-gradient(145deg, #1DB446, #00c851);
         }
 
         .next-fruit {
             position: absolute;
             top: 10px;
             right: 10px;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 240, 245, 0.9));
-            border-radius: 15px;
-            padding: 12px;
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.2);
-            border: 2px solid rgba(255, 105, 180, 0.3);
-            animation: kawaii-bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes kawaii-bounce {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-5px); }
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
 
         .next-fruit h4 {
-            font-size: 11px;
-            color: #FF1493;
-            margin-bottom: 8px;
+            font-size: 10px;
+            color: #00c851;
+            margin-bottom: 5px;
             text-align: center;
-            font-weight: bold;
-            text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.8);
-        }
-
-        .next-fruit h4::before {
-            content: '🌟 ';
-        }
-
-        .next-fruit h4::after {
-            content: ' 🌟';
         }
 
         .game-over {
@@ -372,30 +223,13 @@
         }
 
         .game-over-content {
-            background: linear-gradient(145deg, #FF69B4, #FFB6C1);
+            background: linear-gradient(145deg, #00c851, #00b74a);
             color: white;
-            padding: 35px;
-            border-radius: 30px;
+            padding: 30px;
+            border-radius: 25px;
             text-align: center;
-            box-shadow: 0 30px 60px rgba(255, 105, 180, 0.4);
-            border: 4px solid rgba(255, 255, 255, 0.5);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .game-over-content::before {
-            content: '💔';
-            position: absolute;
-            top: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 24px;
-            animation: kawaii-sad 1s ease-in-out infinite alternate;
-        }
-
-        @keyframes kawaii-sad {
-            0% { transform: translateX(-50%) translateY(0px); }
-            100% { transform: translateX(-50%) translateY(-5px); }
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+            border: 3px solid rgba(255, 255, 255, 0.3);
         }
 
         .game-over-buttons {
@@ -406,33 +240,14 @@
         }
 
         .restart-btn, .share-score-btn {
-            background: linear-gradient(145deg, #FF1493, #FF69B4);
+            background: linear-gradient(145deg, #1DB446, #00c851);
             color: white;
-            border: 3px solid rgba(255, 255, 255, 0.4);
-            padding: 14px 24px;
-            border-radius: 20px;
-            font-size: 15px;
-            font-weight: bold;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 15px;
+            font-size: 14px;
             cursor: pointer;
-            box-shadow: 0 8px 20px rgba(255, 105, 180, 0.3);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .restart-btn:hover, .share-score-btn:hover {
-            transform: translateY(-2px) scale(1.05);
-            box-shadow: 0 12px 25px rgba(255, 105, 180, 0.4);
-        }
-
-        .restart-btn::before {
-            content: '🌸';
-            margin-right: 8px;
-        }
-
-        .share-score-btn::before {
-            content: '💕';
-            margin-right: 8px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
         }
 
         @media (max-width: 480px) {
@@ -508,7 +323,6 @@
         <div class="controls">
             <button class="control-btn" id="dropBtn">落とす</button>
             <button class="control-btn" id="pauseBtn">一時停止</button>
-            <button class="control-btn" id="rankingBtn">🏆ランキング</button>
             <button class="control-btn share-btn" id="shareBtn">シェア</button>
         </div>
     </div>
@@ -543,670 +357,28 @@
         let liffInitialized = false;
         let userProfile = null;
 
-        // オーディオコンテキストとサウンドシステム
-        let audioContext = null;
-        let masterVolume = 0.2;
-
-        // ランキングシステム
-        let rankings = JSON.parse(localStorage.getItem('suikaRankings') || '[]');
-
-        // オーディオコンテキストの初期化
-        function initAudio() {
-            if (!audioContext) {
-                audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            }
-            return audioContext;
-        }
-
-        // かわいいフルーツドロップサウンド生成
-        function playDropSound(fruitType) {
-            if (!initAudio()) return;
-
-            // メインのぷよぷよ音
-            const osc1 = audioContext.createOscillator();
-            const osc2 = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-
-            // かわいい高めの音程（ペンタトニックスケール）
-            const cuteFreqs = [523, 587, 659, 784, 880, 988, 1047, 1175, 1319]; // C5からE6のペンタトニック
-            const mainFreq = cuteFreqs[fruitType % cuteFreqs.length];
-            const harmonyFreq = mainFreq * 1.25; // 完全4度のハーモニー
-
-            // メイン音（三角波で柔らかく）
-            osc1.type = 'triangle';
-            osc1.frequency.setValueAtTime(mainFreq, audioContext.currentTime);
-            osc1.frequency.linearRampToValueAtTime(mainFreq * 0.8, audioContext.currentTime + 0.15);
-
-            // ハーモニー音（サイン波で透明感）
-            osc2.type = 'sine';
-            osc2.frequency.setValueAtTime(harmonyFreq, audioContext.currentTime);
-            osc2.frequency.linearRampToValueAtTime(harmonyFreq * 0.9, audioContext.currentTime + 0.2);
-
-            // かわいい音量カーブ（ぽわんっと）
-            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.3, audioContext.currentTime + 0.02);
-            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.2, audioContext.currentTime + 0.08);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.25);
-
-            // 接続
-            osc1.connect(gainNode);
-            osc2.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            // 再生
-            osc1.start(audioContext.currentTime);
-            osc2.start(audioContext.currentTime);
-            osc1.stop(audioContext.currentTime + 0.25);
-            osc2.stop(audioContext.currentTime + 0.3);
-        }
-
-        // かわいいフルーツマージサウンド生成
-        function playMergeSound(newFruitType) {
-            if (!initAudio()) return;
-
-            // メジャーコードで明るく
-            const rootFreqs = [523, 587, 659, 698, 784, 880, 988, 1047]; // Cメジャースケール
-            const rootFreq = rootFreqs[newFruitType % rootFreqs.length];
-
-            // メジャートライアド（ド・ミ・ソ）
-            const osc1 = audioContext.createOscillator(); // ルート
-            const osc2 = audioContext.createOscillator(); // 3度
-            const osc3 = audioContext.createOscillator(); // 5度
-            const gainNode = audioContext.createGain();
-
-            osc1.type = 'triangle';
-            osc1.frequency.setValueAtTime(rootFreq, audioContext.currentTime);
-            osc1.frequency.linearRampToValueAtTime(rootFreq * 1.2, audioContext.currentTime + 0.4);
-
-            osc2.type = 'sine';
-            osc2.frequency.setValueAtTime(rootFreq * 1.25, audioContext.currentTime); // 長3度
-            osc2.frequency.linearRampToValueAtTime(rootFreq * 1.5, audioContext.currentTime + 0.4);
-
-            osc3.type = 'sine';
-            osc3.frequency.setValueAtTime(rootFreq * 1.5, audioContext.currentTime); // 完全5度
-            osc3.frequency.linearRampToValueAtTime(rootFreq * 1.8, audioContext.currentTime + 0.4);
-
-            // かわいい上昇音のエンベロープ
-            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.4, audioContext.currentTime + 0.05);
-            gainNode.gain.linearRampToValueAtTime(masterVolume * 0.3, audioContext.currentTime + 0.2);
-            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.6);
-
-            // 接続
-            osc1.connect(gainNode);
-            osc2.connect(gainNode);
-            osc3.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-
-            // 再生
-            osc1.start(audioContext.currentTime);
-            osc2.start(audioContext.currentTime);
-            osc3.start(audioContext.currentTime);
-            osc1.stop(audioContext.currentTime + 0.6);
-            osc2.stop(audioContext.currentTime + 0.6);
-            osc3.stop(audioContext.currentTime + 0.6);
-
-            // かわいいキラキラ音
-            setTimeout(() => {
-                playKawaiiSparkleSound(newFruitType);
-            }, 150);
-        }
-
-        // かわいいキラキラエフェクト音
-        function playKawaiiSparkleSound(fruitType) {
-            if (!initAudio()) return;
-
-            // 高音域のペンタトニックスケールでキラキラ
-            const sparkleFreqs = [1047, 1175, 1319, 1568, 1760, 1976, 2093, 2349]; // C6からD7
-
-            for (let i = 0; i < 4; i++) {
-                setTimeout(() => {
-                    const osc = audioContext.createOscillator();
-                    const gainNode = audioContext.createGain();
-
-                    const freq = sparkleFreqs[(fruitType + i) % sparkleFreqs.length];
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-                    osc.frequency.linearRampToValueAtTime(freq * 1.1, audioContext.currentTime + 0.1);
-
-                    // キラキラのかわいい音量カーブ
-                    gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                    gainNode.gain.linearRampToValueAtTime(masterVolume * 0.15, audioContext.currentTime + 0.02);
-                    gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.2);
-
-                    osc.connect(gainNode);
-                    gainNode.connect(audioContext.destination);
-
-                    osc.start(audioContext.currentTime);
-                    osc.stop(audioContext.currentTime + 0.2);
-                }, i * 80);
-            }
-        }
-
-        // ランキング管理関数
-        function saveRanking(playerName, score, maxFruit) {
-            const newEntry = {
-                name: playerName,
-                score: score,
-                maxFruit: maxFruit,
-                date: new Date().toLocaleDateString('ja-JP')
-            };
-
-            rankings.push(newEntry);
-            rankings.sort((a, b) => b.score - a.score);
-            rankings = rankings.slice(0, 5); // トップ5のみ保持
-
-            localStorage.setItem('suikaRankings', JSON.stringify(rankings));
-        }
-
-        function isHighScore(currentScore) {
-            return rankings.length < 5 || currentScore > rankings[rankings.length - 1].score;
-        }
-
-        function showRankingInput(score, maxFruit) {
-            const playerName = prompt('🎉 ハイスコア達成！\n\nお名前を入力してください（10文字以内）:');
-            if (playerName && playerName.trim()) {
-                const trimmedName = playerName.trim().substring(0, 10);
-                saveRanking(trimmedName, score, maxFruit);
-                showRankingDisplay();
-            }
-        }
-
-        function showRankingDisplay() {
-            let rankingHTML = '<div style="background: linear-gradient(145deg, #FFB6C1, #FFC0CB); padding: 20px; border-radius: 15px; margin: 20px 0; box-shadow: 0 10px 20px rgba(0,0,0,0.2);">';
-            rankingHTML += '<h3 style="color: #FF1493; text-align: center; margin-bottom: 15px; font-size: 18px;">🏆 トップ5ランキング 🏆</h3>';
-
-            if (rankings.length === 0) {
-                rankingHTML += '<p style="text-align: center; color: #FF69B4;">まだランキングがありません</p>';
-            } else {
-                rankings.forEach((entry, index) => {
-                    const medal = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][index];
-                    rankingHTML += `<div style="display: flex; justify-content: space-between; align-items: center; margin: 8px 0; padding: 8px; background: rgba(255,255,255,0.3); border-radius: 8px;">`;
-                    rankingHTML += `<span style="font-weight: bold; color: #FF1493;">${medal} ${entry.name}</span>`;
-                    rankingHTML += `<span style="color: #FF69B4;">${entry.score}点 ${entry.maxFruit}</span>`;
-                    rankingHTML += `</div>`;
-                });
-            }
-
-            rankingHTML += '</div>';
-
-            // ゲームオーバー画面に追加
-            const gameOverContent = document.querySelector('.game-over-content');
-            const existingRanking = gameOverContent.querySelector('.ranking-display');
-            if (existingRanking) {
-                existingRanking.remove();
-            }
-
-            const rankingDiv = document.createElement('div');
-            rankingDiv.className = 'ranking-display';
-            rankingDiv.innerHTML = rankingHTML;
-            gameOverContent.insertBefore(rankingDiv, gameOverContent.querySelector('.game-over-buttons'));
-        }
-
-        function showRankingModal() {
-            let rankingHTML = '<div id="rankingModal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; justify-content: center; align-items: center; z-index: 2000;">';
-            rankingHTML += '<div style="background: linear-gradient(145deg, #FFB6C1, #FFC0CB); padding: 30px; border-radius: 20px; max-width: 90vw; max-height: 80vh; overflow-y: auto; box-shadow: 0 20px 40px rgba(0,0,0,0.3);">';
-            rankingHTML += '<h3 style="color: #FF1493; text-align: center; margin-bottom: 20px; font-size: 20px;">🏆 トップ5ランキング 🏆</h3>';
-
-            if (rankings.length === 0) {
-                rankingHTML += '<p style="text-align: center; color: #FF69B4; margin: 20px 0;">まだランキングがありません。<br>ゲームをプレイしてランキングを作りましょう！</p>';
-            } else {
-                rankings.forEach((entry, index) => {
-                    const medal = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'][index];
-                    rankingHTML += `<div style="display: flex; justify-content: space-between; align-items: center; margin: 12px 0; padding: 12px; background: rgba(255,255,255,0.4); border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">`;
-                    rankingHTML += `<div style="display: flex; align-items: center; gap: 10px;"><span style="font-size: 20px;">${medal}</span><span style="font-weight: bold; color: #FF1493;">${entry.name}</span></div>`;
-                    rankingHTML += `<div style="text-align: right;"><div style="color: #FF69B4; font-weight: bold;">${entry.score}点</div><div style="font-size: 12px; color: #FF69B4;">${entry.maxFruit} ${entry.date}</div></div>`;
-                    rankingHTML += `</div>`;
-                });
-            }
-
-            rankingHTML += '<div style="text-align: center; margin-top: 20px;">';
-            rankingHTML += '<button onclick="closeRankingModal()" style="background: linear-gradient(145deg, #FF1493, #FF69B4); color: white; border: none; padding: 12px 24px; border-radius: 15px; font-size: 16px; cursor: pointer; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">閉じる</button>';
-            rankingHTML += '</div></div></div>';
-
-            document.body.insertAdjacentHTML('beforeend', rankingHTML);
-        }
-
-        function closeRankingModal() {
-            const modal = document.getElementById('rankingModal');
-            if (modal) {
-                modal.remove();
-            }
-        }
-
         const FRUITS = [
-            {
-                emoji: '🍇', size: 18, color: '#E6B3FF', points: 1,
-                shape: 'cluster',
-                vertices: generateGrapeShape(18),
-                density: 0.0008,
-                restitution: 0.4
-            },
-            {
-                emoji: '🍒', size: 22, color: '#FFB3B3', points: 3,
-                shape: 'cherry',
-                vertices: generateCherryShape(22),
-                density: 0.0009,
-                restitution: 0.5
-            },
-            {
-                emoji: '🍓', size: 26, color: '#FFB3D9', points: 6,
-                shape: 'strawberry',
-                vertices: generateStrawberryShape(26),
-                density: 0.001,
-                restitution: 0.3
-            },
-            {
-                emoji: '🍑', size: 30, color: '#FFCCB3', points: 10,
-                shape: 'heart',
-                vertices: generateHeartShape(30),
-                density: 0.001,
-                restitution: 0.4
-            },
-            {
-                emoji: '🍊', size: 34, color: '#FFE6B3', points: 15,
-                shape: 'oval',
-                vertices: generateOvalShape(34, 0.9),
-                density: 0.0011,
-                restitution: 0.6
-            },
-            {
-                emoji: '🍎', size: 38, color: '#FFB3B3', points: 21,
-                shape: 'apple',
-                vertices: generateAppleShape(38),
-                density: 0.0012,
-                restitution: 0.5
-            },
-            {
-                emoji: '🍐', size: 42, color: '#D9FFB3', points: 28,
-                shape: 'pear',
-                vertices: generatePearShape(42),
-                density: 0.0013,
-                restitution: 0.4
-            },
-            {
-                emoji: '🍍', size: 46, color: '#FFFFB3', points: 36,
-                shape: 'pineapple',
-                vertices: generatePineappleShape(46),
-                density: 0.0014,
-                restitution: 0.3
-            },
-            {
-                emoji: '🥭', size: 50, color: '#FFD9B3', points: 45,
-                shape: 'mango',
-                vertices: generateMangoShape(50),
-                density: 0.0015,
-                restitution: 0.4
-            },
-            {
-                emoji: '🍈', size: 54, color: '#B3FFD9', points: 55,
-                shape: 'oval',
-                vertices: generateOvalShape(54, 0.8),
-                density: 0.0016,
-                restitution: 0.5
-            },
-            {
-                emoji: '🍉', size: 58, color: '#FFB3CC', points: 66,
-                shape: 'circle',
-                vertices: null,
-                density: 0.0018,
-                restitution: 0.6
-            }
+            { emoji: '🍇', size: 18, color: '#9966cc', points: 1 },
+            { emoji: '🍒', size: 22, color: '#dc143c', points: 3 },
+            { emoji: '🍓', size: 26, color: '#ff1493', points: 6 },
+            { emoji: '🍑', size: 30, color: '#ff6347', points: 10 },
+            { emoji: '🍊', size: 34, color: '#ff8c00', points: 15 },
+            { emoji: '🍎', size: 38, color: '#ff0000', points: 21 },
+            { emoji: '🍐', size: 42, color: '#9acd32', points: 28 },
+            { emoji: '🍍', size: 46, color: '#ffd700', points: 36 },
+            { emoji: '🥭', size: 50, color: '#ff8c69', points: 45 },
+            { emoji: '🍈', size: 54, color: '#98fb98', points: 55 },
+            { emoji: '🍉', size: 58, color: '#ff6b6b', points: 66 }
         ];
 
         const CONTAINER_WIDTH = 350;
         const CONTAINER_HEIGHT = 500;
         const WALL_THICKNESS = 10;
 
-        // フルーツ形状生成関数
-        function generateGrapeShape(size) {
-            // ブドウ型 - 100頂点の精密な房状クラスター
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.8;
-                let radiusY = size;
-
-                // 房の上部（茎部分）を細く長く
-                if (angle > Math.PI * 1.65 || angle < Math.PI * 0.35) {
-                    const tapering = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 3));
-                    radiusY *= 0.4 + tapering * 0.2;
-                    radiusX *= 0.6 + tapering * 0.15;
-                }
-                // 中央部の房の膨らみ
-                else if (angle > Math.PI * 0.4 && angle < Math.PI * 1.6) {
-                    const bulgeFactor = Math.sin((angle - Math.PI * 0.4) / (Math.PI * 1.2) * Math.PI);
-                    radiusX *= 0.9 + bulgeFactor * 0.15;
-                    radiusY *= 0.95 + bulgeFactor * 0.1;
-                }
-
-                // 個々のブドウ粒の凹凸を表現（高頻度の細かい凹凸）
-                const grapeSeeds = 1 + Math.sin(angle * 18) * 0.06 + Math.sin(angle * 24) * 0.04;
-                // 房全体の不規則な輪郭
-                const clusterIrregularity = 1 + Math.sin(angle * 7) * 0.08 + Math.cos(angle * 11) * 0.05;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * grapeSeeds * clusterIrregularity,
-                    y: Math.sin(angle) * radiusY * clusterIrregularity
-                });
-            }
-            return vertices;
-        }
-
-        function generateCherryShape(size) {
-            // チェリー型 - 100頂点の精密なハート型ベリー
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.88;
-                let radiusY = size * 0.92;
-
-                // チェリーの特徴的な上部の窒み（茎の付け根）
-                if (angle > Math.PI * 1.75 || angle < Math.PI * 0.25) {
-                    const indent = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 12));
-                    radiusY *= 0.75 + indent * 0.15;
-                    radiusX *= 0.85 + indent * 0.1;
-                }
-                // メインボディの丸み
-                else if (angle > Math.PI * 0.3 && angle < Math.PI * 1.7) {
-                    const roundness = Math.sin((angle - Math.PI * 0.3) / (Math.PI * 1.4) * Math.PI);
-                    radiusX *= 0.95 + roundness * 0.08;
-                    radiusY *= 0.96 + roundness * 0.06;
-                }
-
-                // チェリーの滑らかな表面と微細な凹凸
-                const skinTexture = 1 + Math.sin(angle * 45) * 0.02 + Math.cos(angle * 32) * 0.015;
-                const naturalVariation = 1 + Math.sin(angle * 8.5) * 0.04;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * skinTexture * naturalVariation,
-                    y: Math.sin(angle) * radiusY * naturalVariation
-                });
-            }
-            return vertices;
-        }
-
-        function generateStrawberryShape(size) {
-            // イチゴ型 - 100頂点の精密なコニカルアクセサリーフルーツ
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size;
-                let radiusY = size;
-
-                // イチゴの特徴的な上部の細み（茎と葉の部分）
-                if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
-                    const tipTaper = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 4));
-                    radiusX *= 0.2 + tipTaper * 0.3;
-                    radiusY *= 0.3 + tipTaper * 0.2;
-                }
-                // 上中部の緩やかな遷移
-                else if (angle > Math.PI * 1.4 && angle < Math.PI * 1.7 || angle > Math.PI * 0.3 && angle < Math.PI * 0.6) {
-                    const transition = Math.sin((angle > Math.PI ? 2*Math.PI - angle : angle) * 8);
-                    radiusX *= 0.5 + transition * 0.3;
-                    radiusY *= 0.6 + transition * 0.2;
-                }
-                // メインボディの膨らみ
-                else if (angle > Math.PI * 0.6 && angle < Math.PI * 1.4) {
-                    const bulgeFactor = Math.sin((angle - Math.PI * 0.6) / (Math.PI * 0.8) * Math.PI);
-                    radiusX *= 0.85 + bulgeFactor * 0.2;
-                    radiusY *= 0.9 + bulgeFactor * 0.15;
-                }
-
-                // イチゴの種（アキーン）の細かい凹凸パターン
-                const seedPattern = 1 + Math.sin(angle * 28) * 0.04 + Math.cos(angle * 35) * 0.03;
-                // 不規則な表面の質感
-                const surfaceTexture = 1 + Math.sin(angle * 15) * 0.06 + Math.cos(angle * 12) * 0.04;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * seedPattern * surfaceTexture,
-                    y: Math.sin(angle) * radiusY * surfaceTexture
-                });
-            }
-            return vertices;
-        }
-
-        function generateHeartShape(size) {
-            // 桃型 - 100頂点の精密な核果（ドループ）
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.82;
-                let radiusY = size * 1.15;
-
-                // 桃の特徴的な縦の溝（縫合線）
-                if (angle > Math.PI * 0.95 && angle < Math.PI * 1.05) {
-                    radiusX *= 0.88; // メインの溝
-                } else if (angle > Math.PI * 1.95 || angle < Math.PI * 0.05) {
-                    radiusX *= 0.89; // 対側の溝
-                }
-
-                // 上部（茎側）の幅広い形状
-                if (angle > Math.PI * 1.6 || angle < Math.PI * 0.4) {
-                    radiusY *= 0.9;
-                    radiusX *= 1.05;
-                }
-                // 下部の尖った形状
-                else if (angle > Math.PI * 0.75 && angle < Math.PI * 1.25) {
-                    const pointedness = Math.sin((angle - Math.PI * 0.75) / (Math.PI * 0.5) * Math.PI);
-                    radiusX *= 0.85 + pointedness * 0.1;
-                    radiusY *= 1.02 + pointedness * 0.08;
-                }
-
-                // 桃の柔らかい産毛の質感
-                const fuzzTexture = 1 + Math.sin(angle * 48) * 0.02 + Math.cos(angle * 33) * 0.015;
-                // 不規則な表面の質感
-                const naturalBumps = 1 + Math.sin(angle * 13) * 0.04 + Math.cos(angle * 17) * 0.03;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * fuzzTexture * naturalBumps,
-                    y: Math.sin(angle) * radiusY * naturalBumps
-                });
-            }
-            return vertices;
-        }
-
-        function generateOvalShape(size, ratio) {
-            // 楕円形
-            const vertices = [];
-            const sides = 16;
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                vertices.push({
-                    x: Math.cos(angle) * size,
-                    y: Math.sin(angle) * size * ratio
-                });
-            }
-            return vertices;
-        }
-
-        function generateAppleShape(size) {
-            // リンゴ型 - 100頂点の精密なポームフルーツ
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.92;
-                let radiusY = size * 0.88;
-
-                // リンゴの特徴的な上部の深いくぼみ（5室構造）
-                if (angle > Math.PI * 1.8 || angle < Math.PI * 0.2) {
-                    const coreIndent = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 15));
-                    radiusY *= 0.65 + coreIndent * 0.2;
-                    radiusX *= 0.8 + coreIndent * 0.1;
-                }
-                // 上中部の緩やかな遷移
-                else if (angle > Math.PI * 1.6 && angle < Math.PI * 1.8 || angle > Math.PI * 0.2 && angle < Math.PI * 0.4) {
-                    const transition = Math.sin((angle > Math.PI ? 2*Math.PI - angle : angle) * 10);
-                    radiusY *= 0.85 + transition * 0.1;
-                    radiusX *= 0.9 + transition * 0.05;
-                }
-                // メインボディの丸み
-                else if (angle > Math.PI * 0.4 && angle < Math.PI * 1.6) {
-                    const appleBulge = Math.sin((angle - Math.PI * 0.4) / (Math.PI * 1.2) * Math.PI);
-                    radiusX *= 0.95 + appleBulge * 0.08;
-                    radiusY *= 0.92 + appleBulge * 0.1;
-                }
-
-                // リンゴの滑らかで光沢のある表面
-                const glossy = 1 + Math.sin(angle * 60) * 0.015 + Math.cos(angle * 45) * 0.01;
-                // 微細な形状のバリエーション
-                const naturalVariation = 1 + Math.sin(angle * 11) * 0.03;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * glossy * naturalVariation,
-                    y: Math.sin(angle) * radiusY * naturalVariation
-                });
-            }
-            return vertices;
-        }
-
-        function generatePearShape(size) {
-            // 洋梨型 - 100頂点の精密なピリフォルムポーム
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size;
-                let radiusY = size;
-
-                // 洋梨の特徴的な下部の細いネック
-                if (angle > Math.PI * 0.75 && angle < Math.PI * 1.25) {
-                    const neckTaper = Math.sin((angle - Math.PI * 0.75) / (Math.PI * 0.5) * Math.PI);
-                    radiusX *= 0.4 + neckTaper * 0.35;
-                    radiusY *= 0.75 + neckTaper * 0.15;
-                }
-                // 中央部の緩やかな移行
-                else if (angle > Math.PI * 0.55 && angle < Math.PI * 0.75 || angle > Math.PI * 1.25 && angle < Math.PI * 1.45) {
-                    const waist = Math.sin((angle > Math.PI ? 2*Math.PI - angle : angle) * 6);
-                    radiusX *= 0.7 + waist * 0.2;
-                    radiusY *= 0.85 + waist * 0.1;
-                }
-                // 上部の大きな膨らみ（洋梨のメインボディ）
-                else if (angle > Math.PI * 1.45 || angle < Math.PI * 0.55) {
-                    radiusX *= 1.1;
-                    radiusY *= 1.08;
-                }
-
-                // 洋梨の滑らかで美しい曲線
-                const elegantCurve = 1 + Math.sin(angle * 25) * 0.02 + Math.cos(angle * 18) * 0.015;
-                // 自然な非対称性
-                const asymmetry = 1 + Math.sin(angle * 9) * 0.04;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * elegantCurve * asymmetry,
-                    y: Math.sin(angle) * radiusY * asymmetry
-                });
-            }
-            return vertices;
-        }
-
-        function generatePineappleShape(size) {
-            // パイナップル型 - 100頂点の精密なマルチプルフルーツ
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.72;
-                let radiusY = size * 1.35;
-
-                // 上部（クラウンに向かう部分）の細み
-                if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
-                    const crownTaper = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 5));
-                    radiusX *= 0.85 + crownTaper * 0.1;
-                    radiusY *= 0.88 + crownTaper * 0.05;
-                }
-                // 下部の緩やかな細み
-                else if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
-                    radiusX *= 0.92;
-                    radiusY *= 0.92;
-                }
-                // メインボディの縦長の楕円
-                else {
-                    radiusX *= 1.0;
-                    radiusY *= 1.0;
-                }
-
-                // パイナップルの特徴的なダイヤモンドパターンの凹凸
-                const diamondRows = Math.sin(angle * 12) * Math.cos(angle * 8);
-                const diamondCols = Math.sin(angle * 20) * Math.cos(angle * 15);
-                const diamondTexture = 1 + (diamondRows + diamondCols) * 0.06;
-
-                // 表面の粗い質感
-                const roughSkin = 1 + Math.sin(angle * 35) * 0.04 + Math.cos(angle * 28) * 0.03;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * diamondTexture * roughSkin,
-                    y: Math.sin(angle) * radiusY * roughSkin
-                });
-            }
-            return vertices;
-        }
-
-        function generateMangoShape(size) {
-            // マンゴー型 - 100頂点の精密なドループフルーツ
-            const vertices = [];
-            const sides = 100;
-
-            for (let i = 0; i < sides; i++) {
-                const angle = (i / sides) * Math.PI * 2;
-                let radiusX = size * 0.75;
-                let radiusY = size * 1.25;
-
-                // マンゴーの特徴的な非対称な腎臓型曲線
-                const asymmetricCurve = Math.sin(angle * 1.3) + Math.cos(angle * 2.1) * 0.5;
-
-                // 片側の大きな膨らみ（種の反対側）
-                if (angle > Math.PI * 0.15 && angle < Math.PI * 1.3) {
-                    radiusX *= 1.05 + asymmetricCurve * 0.12;
-                    radiusY *= 1.02 + asymmetricCurve * 0.06;
-                }
-                // 反対側の緊しった部分（種側）
-                else {
-                    radiusX *= 0.88 + asymmetricCurve * 0.08;
-                    radiusY *= 0.96 + asymmetricCurve * 0.04;
-                }
-
-                // 上部（茎側）の細み
-                if (angle > Math.PI * 1.7 || angle < Math.PI * 0.3) {
-                    const stemTaper = Math.abs(Math.cos((angle > Math.PI ? angle - 2*Math.PI : angle) * 6));
-                    radiusX *= 0.8 + stemTaper * 0.15;
-                    radiusY *= 0.85 + stemTaper * 0.1;
-                }
-                // 下部の緩やかな尖り
-                else if (angle > Math.PI * 0.8 && angle < Math.PI * 1.2) {
-                    radiusX *= 0.92;
-                    radiusY *= 0.94;
-                }
-
-                // マンゴーの滑らかで光沢のある表面
-                const glossySkin = 1 + Math.sin(angle * 42) * 0.02 + Math.cos(angle * 35) * 0.015;
-                // 自然な非対称性
-                const naturalAsymmetry = 1 + Math.sin(angle * 7) * 0.05;
-
-                vertices.push({
-                    x: Math.cos(angle) * radiusX * glossySkin * naturalAsymmetry,
-                    y: Math.sin(angle) * radiusY * naturalAsymmetry
-                });
-            }
-            return vertices;
-        }
-
         // LIFF初期化
         async function initLiff() {
             try {
-                await liff.init({ liffId: '2008275057' }); // LIFF ID設定完了
+                await liff.init({ liffId: '2008360067-zRDN6XnK' }); // LIFF ID設定完了
                 liffInitialized = true;
 
                 if (liff.isLoggedIn()) {
@@ -1253,15 +425,15 @@
 
             const ground = Bodies.rectangle(CONTAINER_WIDTH / 2, CONTAINER_HEIGHT - WALL_THICKNESS / 2, CONTAINER_WIDTH, WALL_THICKNESS, {
                 isStatic: true,
-                render: { fillStyle: '#FFB6C1' }
+                render: { fillStyle: '#00c851' }
             });
             const leftWall = Bodies.rectangle(WALL_THICKNESS / 2, CONTAINER_HEIGHT / 2, WALL_THICKNESS, CONTAINER_HEIGHT, {
                 isStatic: true,
-                render: { fillStyle: '#FFB6C1' }
+                render: { fillStyle: '#00c851' }
             });
             const rightWall = Bodies.rectangle(CONTAINER_WIDTH - WALL_THICKNESS / 2, CONTAINER_HEIGHT / 2, WALL_THICKNESS, CONTAINER_HEIGHT, {
                 isStatic: true,
-                render: { fillStyle: '#FFB6C1' }
+                render: { fillStyle: '#00c851' }
             });
 
             World.add(world, [ground, leftWall, rightWall]);
@@ -1270,150 +442,27 @@
             Runner.run(runner, engine);
             Render.run(render);
 
-            // カスタムレンダリング：フルーツの上に絵文字を描画
-            Events.on(render, 'afterRender', function() {
-                const ctx = render.canvas.getContext('2d');
-                const bodies = world.bodies;
-
-                bodies.forEach(body => {
-                    if (body.isFruit) {
-                        const fruit = FRUITS[body.fruitType];
-
-                        // フルーツの位置と回転を取得
-                        const pos = body.position;
-                        const angle = body.angle;
-
-                        // コンテキストを保存
-                        ctx.save();
-
-                        // フルーツの中心に移動して回転
-                        ctx.translate(pos.x, pos.y);
-                        ctx.rotate(angle);
-
-                        // 絵文字のサイズを調整
-                        const emojiSize = fruit.size * 1.2;
-                        ctx.font = `${emojiSize}px Arial`;
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-
-                        // 影をつける
-                        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-                        ctx.shadowBlur = 4;
-                        ctx.shadowOffsetX = 2;
-                        ctx.shadowOffsetY = 2;
-
-                        // 絵文字を描画
-                        ctx.fillText(fruit.emoji, 0, 0);
-
-                        // コンテキストを復元
-                        ctx.restore();
-                    }
-                });
-            });
-
             Events.on(engine, 'collisionStart', handleCollisions);
         }
 
         function createFruit(x, y, type) {
             const fruit = FRUITS[type];
-            let body;
-
-            // フルーツの形状に応じてボディを作成
-            if (fruit.shape === 'circle') {
-                // 円形（スイカなど）
-                body = Bodies.circle(x, y, fruit.size, {
-                    restitution: fruit.restitution,
-                    friction: 0.5,
-                    density: fruit.density,
-                    render: {
-                        fillStyle: fruit.color,
-                        strokeStyle: '#FF69B4',
-                        lineWidth: 3
-                    }
-                });
-            } else {
-                // 複雑な形状
-                try {
-                    body = Bodies.fromVertices(x, y, fruit.vertices, {
-                        restitution: fruit.restitution,
-                        friction: 0.6,
-                        density: fruit.density,
-                        render: {
-                            fillStyle: fruit.color,
-                            strokeStyle: '#FF69B4',
-                            lineWidth: 3
-                        }
-                    });
-                } catch (error) {
-                    console.log(`Error creating ${fruit.emoji} shape, falling back to circle:`, error);
-                    // フォールバック：円形を使用
-                    body = Bodies.circle(x, y, fruit.size, {
-                        restitution: fruit.restitution,
-                        friction: 0.5,
-                        density: fruit.density,
-                        render: {
-                            fillStyle: fruit.color,
-                            strokeStyle: '#FF69B4',
-                            lineWidth: 3
-                        }
-                    });
+            const body = Bodies.circle(x, y, fruit.size, {
+                restitution: 0.3,
+                friction: 0.5,
+                density: 0.001,
+                render: {
+                    fillStyle: fruit.color,
+                    strokeStyle: '#ffffff',
+                    lineWidth: 2
                 }
-            }
+            });
 
-            // フルーツの識別情報を追加
             body.fruitType = type;
             body.isFruit = true;
 
-            // 自然な回転を追加（落下時のみ）
-            if (y <= 60) {
-                Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.3);
-            }
-
-            // 慣性を調整（回転しやすくする）
-            Body.setInertia(body, body.inertia * 0.8);
-
             World.add(world, body);
-
-            // かわいいドロップエフェクト
-            if (y <= 60) { // 新しく落とされたフルーツのみ
-                createDropEffect(x, y);
-            }
-
             return body;
-        }
-
-        function createDropEffect(x, y) {
-            // Create rainbow trail effect
-            for (let i = 0; i < 5; i++) {
-                setTimeout(() => {
-                    const trail = document.createElement('div');
-                    trail.innerHTML = '🌟';
-                    trail.style.position = 'absolute';
-                    trail.style.fontSize = '12px';
-                    trail.style.pointerEvents = 'none';
-                    trail.style.zIndex = '999';
-                    trail.style.left = (x + (Math.random() - 0.5) * 20) + 'px';
-                    trail.style.top = (y - i * 5) + 'px';
-
-                    document.body.appendChild(trail);
-
-                    trail.animate([
-                        {
-                            transform: 'translate(-50%, -50%) scale(1)',
-                            opacity: 0.8
-                        },
-                        {
-                            transform: 'translate(-50%, 50px) scale(0.3)',
-                            opacity: 0
-                        }
-                    ], {
-                        duration: 600,
-                        easing: 'ease-out'
-                    }).addEventListener('finish', () => {
-                        trail.remove();
-                    });
-                }, i * 100);
-            }
         }
 
         function handleCollisions(event) {
@@ -1435,9 +484,6 @@
                             World.remove(world, [bodyA, bodyB]);
                             createFruit(newX, newY, newType);
 
-                            // マージサウンドを再生
-                            playMergeSound(newType);
-
                             score += FRUITS[newType].points;
                             maxFruitReached = Math.max(maxFruitReached, newType);
                             updateDisplay();
@@ -1450,100 +496,23 @@
         }
 
         function createMergeEffect(x, y) {
-            // Create multiple sparkle effects
-            for (let i = 0; i < 8; i++) {
-                createSparkle(x, y, i);
-            }
-
-            // Create heart effect
-            createHeartEffect(x, y);
+            ctx.save();
+            ctx.globalAlpha = 0.8;
+            ctx.fillStyle = '#ffff00';
+            ctx.beginPath();
+            ctx.arc(x, y, 25, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
         }
 
-        function createSparkle(centerX, centerY, index) {
-            const sparkle = document.createElement('div');
-            sparkle.innerHTML = '✨';
-            sparkle.style.position = 'absolute';
-            sparkle.style.fontSize = '16px';
-            sparkle.style.pointerEvents = 'none';
-            sparkle.style.zIndex = '1000';
-
-            const angle = (index / 8) * Math.PI * 2;
-            const distance = 30 + Math.random() * 20;
-            const startX = centerX + Math.cos(angle) * 10;
-            const startY = centerY + Math.sin(angle) * 10;
-            const endX = centerX + Math.cos(angle) * distance;
-            const endY = centerY + Math.sin(angle) * distance;
-
-            sparkle.style.left = startX + 'px';
-            sparkle.style.top = startY + 'px';
-
-            document.body.appendChild(sparkle);
-
-            // Animate sparkle
-            sparkle.animate([
-                {
-                    transform: 'translate(0, 0) scale(0.5) rotate(0deg)',
-                    opacity: 1
-                },
-                {
-                    transform: `translate(${endX - startX}px, ${endY - startY}px) scale(1.2) rotate(360deg)`,
-                    opacity: 0
-                }
-            ], {
-                duration: 800,
-                easing: 'ease-out'
-            }).addEventListener('finish', () => {
-                sparkle.remove();
-            });
-        }
-
-        function createHeartEffect(x, y) {
-            const heart = document.createElement('div');
-            heart.innerHTML = '💕';
-            heart.style.position = 'absolute';
-            heart.style.fontSize = '24px';
-            heart.style.pointerEvents = 'none';
-            heart.style.zIndex = '1000';
-            heart.style.left = x + 'px';
-            heart.style.top = y + 'px';
-
-            document.body.appendChild(heart);
-
-            heart.animate([
-                {
-                    transform: 'translate(-50%, -50%) scale(0.5)',
-                    opacity: 1
-                },
-                {
-                    transform: 'translate(-50%, -150%) scale(1.5)',
-                    opacity: 0
-                }
-            ], {
-                duration: 1000,
-                easing: 'ease-out'
-            }).addEventListener('finish', () => {
-                heart.remove();
-            });
-        }
-
-        function dropFruit(x = mouseX) {
+        function dropFruit() {
             if (!gameRunning || currentFruit) return;
 
-            // Ensure drop position is within bounds
-            const dropX = Math.max(30, Math.min(CONTAINER_WIDTH - 30, x));
-
             const type = nextFruitType;
-            currentFruit = createFruit(dropX, 50, type);
-
-            // ドロップサウンドを再生
-            playDropSound(type);
+            currentFruit = createFruit(mouseX, 50, type);
 
             nextFruitType = Math.floor(Math.random() * Math.min(5, FRUITS.length));
             updateNextFruit();
-
-            // Update drop line position to match drop location
-            mouseX = dropX;
-            updateDropLine();
 
             dropTimeout = setTimeout(() => {
                 currentFruit = null;
@@ -1565,16 +534,6 @@
             gameRunning = false;
             document.getElementById('finalScore').textContent = score;
             document.getElementById('finalMaxFruit').textContent = FRUITS[maxFruitReached].emoji;
-
-            // ハイスコアチェック
-            if (isHighScore(score)) {
-                setTimeout(() => {
-                    showRankingInput(score, FRUITS[maxFruitReached].emoji);
-                }, 500); // 少し遅らせてゲームオーバー画面が表示されてから
-            } else {
-                showRankingDisplay(); // 既存のランキングを表示
-            }
-
             document.getElementById('gameOver').style.display = 'flex';
         }
 
@@ -1642,15 +601,13 @@
         canvas.addEventListener('mousemove', (e) => {
             if (!gameRunning) return;
             const rect = canvas.getBoundingClientRect();
-            mouseX = Math.max(30, Math.min(CONTAINER_WIDTH - 30, e.clientX - rect.left));
+            mouseX = Math.max(25, Math.min(CONTAINER_WIDTH - 25, e.clientX - rect.left));
             updateDropLine();
         });
 
         canvas.addEventListener('click', (e) => {
             if (gameRunning) {
-                const rect = canvas.getBoundingClientRect();
-                const clickX = e.clientX - rect.left;
-                dropFruit(clickX);
+                dropFruit();
             }
         });
 
@@ -1659,26 +616,22 @@
             if (!gameRunning) return;
             const rect = canvas.getBoundingClientRect();
             const touch = e.touches[0];
-            mouseX = Math.max(30, Math.min(CONTAINER_WIDTH - 30, touch.clientX - rect.left));
+            mouseX = Math.max(25, Math.min(CONTAINER_WIDTH - 25, touch.clientX - rect.left));
             updateDropLine();
         });
 
         canvas.addEventListener('touchstart', (e) => {
             e.preventDefault();
             if (gameRunning) {
-                const rect = canvas.getBoundingClientRect();
-                const touch = e.touches[0];
-                const touchX = touch.clientX - rect.left;
-                dropFruit(touchX);
+                dropFruit();
             }
         });
 
-        document.getElementById('dropBtn').addEventListener('click', () => dropFruit());
+        document.getElementById('dropBtn').addEventListener('click', dropFruit);
         document.getElementById('pauseBtn').addEventListener('click', () => {
             gameRunning = !gameRunning;
             document.getElementById('pauseBtn').textContent = gameRunning ? '一時停止' : '再開';
         });
-        document.getElementById('rankingBtn').addEventListener('click', showRankingModal);
         document.getElementById('shareBtn').addEventListener('click', shareGame);
         document.getElementById('restartBtn').addEventListener('click', startGame);
         document.getElementById('shareScoreBtn').addEventListener('click', shareScore);
