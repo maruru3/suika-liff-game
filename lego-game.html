@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LEGO Game - LINE</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #FF6B35 0%, #F7931E 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: white;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+
+        #progress-text {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        #user-info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            color: white;
+            font-size: 16px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 15px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        #unity-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #unity-canvas {
+            width: 100%;
+            height: 100%;
+            background: #231F20;
+        }
+
+        #error-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            color: white;
+            padding: 20px;
+        }
+
+        #error-screen.visible {
+            display: flex;
+        }
+
+        .error-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .error-message {
+            font-size: 16px;
+            text-align: center;
+            max-width: 400px;
+            line-height: 1.5;
+        }
+
+        .retry-button {
+            margin-top: 20px;
+            padding: 12px 30px;
+            background: #FF6B35;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .retry-button:hover {
+            background: #E65525;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+
+        .back-button:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div id="loading-screen">
+        <div class="loading-content">
+            <div class="spinner"></div>
+            <div class="loading-text">Loading LEGO Game...</div>
+            <div id="progress-text">0%</div>
+        </div>
+    </div>
+
+    <!-- User Info -->
+    <div id="user-info" style="display: none;">
+        <span id="user-name">Loading...</span>
+    </div>
+
+    <!-- Back Button -->
+    <button class="back-button" onclick="window.location.href='menu.html'">← Menu</button>
+
+    <!-- Unity Container -->
+    <div id="unity-container">
+        <canvas id="unity-canvas"></canvas>
+    </div>
+
+    <!-- Error Screen -->
+    <div id="error-screen">
+        <div class="error-icon">⚠️</div>
+        <div class="error-title">Error</div>
+        <div class="error-message">Failed to load the game. Please try again.</div>
+        <button class="retry-button" onclick="location.reload()">Retry</button>
+    </div>
+
+    <!-- LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+    <!-- Unity-LIFF Bridge -->
+    <script src="unity-liff-bridge.js"></script>
+
+    <!-- Unity WebGL Loader -->
+    <script src="Build/lego001.loader.js"></script>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            liffId: '2008360067-zRDN6XnK', // LIFF ID
+            unityBuildPath: 'Build',
+            dataUrl: 'Build/lego001.data',
+            frameworkUrl: 'Build/lego001.framework.js',
+            codeUrl: 'Build/lego001.wasm',
+            streamingAssetsUrl: 'StreamingAssets',
+            companyName: 'Unity',
+            productName: 'LEGO Microgame',
+            productVersion: '1.0.0'
+        };
+
+        let unityInstance = null;
+        const loadingScreen = document.getElementById('loading-screen');
+        const progressText = document.getElementById('progress-text');
+        const userInfo = document.getElementById('user-info');
+        const errorScreen = document.getElementById('error-screen');
+
+        // Show error
+        function showError(message) {
+            errorScreen.querySelector('.error-message').textContent = message;
+            errorScreen.classList.add('visible');
+            loadingScreen.classList.add('hidden');
+        }
+
+        // Initialize Unity
+        async function initializeUnity() {
+            try {
+                const canvas = document.getElementById('unity-canvas');
+
+                // Unity load config
+                const config = {
+                    dataUrl: CONFIG.dataUrl,
+                    frameworkUrl: CONFIG.frameworkUrl,
+                    codeUrl: CONFIG.codeUrl,
+                    streamingAssetsUrl: CONFIG.streamingAssetsUrl,
+                    companyName: CONFIG.companyName,
+                    productName: CONFIG.productName,
+                    productVersion: CONFIG.productVersion,
+                };
+
+                // Progress callback
+                config.progressCallback = (progress) => {
+                    const percent = Math.round(progress * 100);
+                    progressText.textContent = `${percent}%`;
+                };
+
+                // Create Unity Instance
+                unityInstance = await createUnityInstance(canvas, config);
+
+                // Register bridge
+                window.unityLiffBridge.setUnityInstance(unityInstance);
+
+                // Hide loading screen
+                setTimeout(() => {
+                    loadingScreen.classList.add('hidden');
+                }, 500);
+
+                console.log('Unity initialized successfully');
+
+            } catch (error) {
+                console.error('Unity initialization error:', error);
+                showError('Failed to load the game. Please try again.');
+            }
+        }
+
+        // Main initialization
+        async function main() {
+            console.log('LEGO Game - Unity-LIFF App starting');
+
+            // Initialize LIFF
+            try {
+                await liff.init({ liffId: CONFIG.liffId });
+                console.log('LIFF initialized');
+
+                // Check login status
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+                // Get user profile
+                const profile = await liff.getProfile();
+                console.log('User profile:', profile);
+
+                // Show user info
+                if (userInfo && profile) {
+                    document.getElementById('user-name').textContent = profile.displayName;
+                    userInfo.style.display = 'block';
+                }
+
+                // Initialize Unity
+                await initializeUnity();
+
+            } catch (error) {
+                console.error('LIFF initialization error:', error);
+                showError('Failed to initialize LINE connection.');
+            }
+        }
+
+        // Start app
+        window.addEventListener('load', main);
+    </script>
+</body>
+</html>
