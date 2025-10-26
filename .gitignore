@@ -1,27 +1,54 @@
-# Temporary files
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Ll]ogs/
+[Uu]ser[Ss]ettings/
+*.pidb
+*.booproj
+*.svd
+*.mdb
+*.opendb
+*.VC.db
+
+# Unity Build - GitHub Pages用なので含める
+# Build/ はコメントアウト（公開する）
+
+# Visual Studio / Rider
+.vs/
+.idea/
+*.csproj
+*.unityproj
+*.sln
+*.suo
 *.tmp
-*.temp
+*.user
+*.userprefs
 
-# Development files
-https_server.py
-icosahedron_rotation.py
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# SSL certificates
-*.pem
-*.crt
-*.key
-
-# Virtual environment
+# Python
+__pycache__/
+*.py[cod]
 .venv/
 venv/
 
-# IDE files
-.vscode/
-.idea/
+# セキュリティ
+*.pem
+*.key
+server.crt
+server.key
+.env
 
-# OS files
-.DS_Store
-Thumbs.db
+# 古いファイル
+*.old
+*.bak
 
-# Log files
+# Serena
+.serena/
+
+# その他
 *.log
