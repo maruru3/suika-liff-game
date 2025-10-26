@@ -25,14 +25,14 @@ public class Suika3DSceneBuilder : EditorWindow
     {
         Debug.Log("=== 3Dスイカゲーム シーン構築開始 ===");
 
-        // 1. カメラ設定
-        SetupCamera();
-
-        // 2. ライト設定
-        SetupLight();
-
-        // 3. ボックス作成
+        // 1. ボックス作成（カメラのターゲット位置を決めるため先に作成）
         GameObject box = CreateBox();
+
+        // 2. カメラ設定
+        SetupCamera(box);
+
+        // 3. ライト設定
+        SetupLight();
 
         // 4. スポーンポイント作成
         CreateSpawnPoint();
@@ -56,23 +56,54 @@ public class Suika3DSceneBuilder : EditorWindow
         EditorUtility.DisplayDialog("完了", "3Dスイカゲームのシーン構築が完了しました！\n\nPlayボタンを押してテストプレイできます。", "OK");
     }
 
-    static void SetupCamera()
+    static void SetupCamera(GameObject box)
     {
         Camera mainCamera = Camera.main;
+        GameObject cameraObj;
+
         if (mainCamera == null)
         {
-            GameObject cameraObj = new GameObject("Main Camera");
+            cameraObj = new GameObject("Main Camera");
             mainCamera = cameraObj.AddComponent<Camera>();
             cameraObj.tag = "MainCamera";
         }
+        else
+        {
+            cameraObj = mainCamera.gameObject;
+        }
 
-        mainCamera.transform.position = new Vector3(0, 3, -6);
+        mainCamera.transform.position = new Vector3(0, 3, -8);
         mainCamera.transform.rotation = Quaternion.Euler(20, 0, 0);
         mainCamera.fieldOfView = 60;
         mainCamera.clearFlags = CameraClearFlags.SolidColor;
         mainCamera.backgroundColor = new Color(0.2f, 0.3f, 0.5f);
 
-        Debug.Log("✓ カメラ設定完了");
+        // CameraControllerを追加
+        CameraController cameraController = cameraObj.GetComponent<CameraController>();
+        if (cameraController == null)
+        {
+            cameraController = cameraObj.AddComponent<CameraController>();
+        }
+
+        // ターゲットをボックス中心に設定
+        GameObject cameraTarget = GameObject.Find("CameraTarget");
+        if (cameraTarget == null)
+        {
+            cameraTarget = new GameObject("CameraTarget");
+        }
+        cameraTarget.transform.position = new Vector3(0, 2, 0);
+
+        cameraController.target = cameraTarget.transform;
+        cameraController.distance = 8f;
+        cameraController.rotationSpeed = 5f;
+        cameraController.minDistance = 4f;
+        cameraController.maxDistance = 15f;
+        cameraController.minVerticalAngle = 10f;
+        cameraController.maxVerticalAngle = 80f;
+
+        EditorUtility.SetDirty(cameraController);
+
+        Debug.Log("✓ カメラ設定完了（回転機能付き）");
     }
 
     static void SetupLight()

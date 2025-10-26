@@ -49,6 +49,9 @@ public class GameManager3D : MonoBehaviour
     // LIFF連携
     private LIFFBridge liffBridge;
 
+    // カメラコントローラー
+    private CameraController cameraController;
+
     [System.Serializable]
     public class FruitData
     {
@@ -62,6 +65,7 @@ public class GameManager3D : MonoBehaviour
         // 初期化
         audioSource = gameObject.AddComponent<AudioSource>();
         liffBridge = FindObjectOfType<LIFFBridge>();
+        cameraController = FindObjectOfType<CameraController>();
 
         // フルーツデータ初期化
         InitializeFruitData();
@@ -115,17 +119,31 @@ public class GameManager3D : MonoBehaviour
         Vector3 inputPosition = Vector3.zero;
         bool hasInput = false;
 
-        // マウス入力
-        if (Input.GetMouseButton(0))
+        // マウス入力（左クリックのみ、右クリックとCtrl+左クリックはカメラ回転用）
+        if (Input.GetMouseButton(0) && !Input.GetKey(KeyCode.LeftControl))
         {
             inputPosition = Input.mousePosition;
             hasInput = true;
+
+            // カメラ回転を一時的に無効化
+            if (cameraController != null)
+                cameraController.SetCanRotate(false);
         }
-        // タッチ入力
-        else if (Input.touchCount > 0)
+        // タッチ入力（1本指のみ、2本指はズーム用）
+        else if (Input.touchCount == 1)
         {
             inputPosition = Input.GetTouch(0).position;
             hasInput = true;
+
+            // カメラ回転を一時的に無効化
+            if (cameraController != null)
+                cameraController.SetCanRotate(false);
+        }
+        else
+        {
+            // カメラ回転を再有効化
+            if (cameraController != null)
+                cameraController.SetCanRotate(true);
         }
 
         if (hasInput)
