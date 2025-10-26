@@ -205,20 +205,19 @@
     <script src="unity-liff-bridge.js"></script>
 
     <!-- Unity WebGL Loader (Unityビルド時に生成されるファイルへのパスを指定) -->
-    <!-- 例: <script src="Build/UnityBuild.loader.js"></script> -->
-    <script src="Build/UnityBuild.loader.js"></script>
+    <script src="Build/WebGLTemplates.loader.js"></script>
 
     <script>
         // 設定
         const CONFIG = {
             liffId: '2008360067-zRDN6XnK', // あなたのLIFF IDに置き換えてください
             unityBuildPath: 'Build', // Unityビルドフォルダのパス
-            dataUrl: 'Build/UnityBuild.data',
-            frameworkUrl: 'Build/UnityBuild.framework.js',
-            codeUrl: 'Build/UnityBuild.wasm',
+            dataUrl: 'Build/WebGLTemplates.data.gz',
+            frameworkUrl: 'Build/WebGLTemplates.framework.js.gz',
+            codeUrl: 'Build/WebGLTemplates.wasm.gz',
             streamingAssetsUrl: 'StreamingAssets',
             companyName: 'YourCompany',
-            productName: 'UnityLIFFGame',
+            productName: 'SuikaGame',
             productVersion: '1.0.0'
         };
 
@@ -262,9 +261,7 @@
             try {
                 const canvas = document.getElementById('unity-canvas');
 
-                // Unity読み込み進捗
-                const buildUrl = CONFIG.unityBuildPath;
-                const loaderUrl = buildUrl + '/UnityBuild.loader.js';
+                // Unity読み込み設定
                 const config = {
                     dataUrl: CONFIG.dataUrl,
                     frameworkUrl: CONFIG.frameworkUrl,
