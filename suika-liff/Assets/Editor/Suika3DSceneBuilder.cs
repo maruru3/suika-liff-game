@@ -266,7 +266,7 @@ public class Suika3DSceneBuilder : EditorWindow
 
         // NextFruitText
         GameObject nextFruitText = CreateOrGetChild(canvas, "NextFruitText");
-        AddTextMeshPro(nextFruitText, "Next: さくらんぼ", 36, TextAlignmentOptions.Top, new Vector2(0, -50));
+        AddTextMeshPro(nextFruitText, "Next: Cherry", 36, TextAlignmentOptions.Top, new Vector2(0, -50));
 
         // GameOverPanel
         GameObject gameOverPanel = CreateOrGetChild(canvas, "GameOverPanel");
@@ -319,7 +319,7 @@ public class Suika3DSceneBuilder : EditorWindow
         buttonImage.color = new Color(0.2f, 0.6f, 0.2f);
 
         GameObject buttonText = CreateOrGetChild(restartButton, "Text");
-        AddTextMeshPro(buttonText, "リスタート", 36, TextAlignmentOptions.Center, Vector2.zero);
+        AddTextMeshPro(buttonText, "RESTART", 36, TextAlignmentOptions.Center, Vector2.zero);
 
         Debug.Log("✓ UI作成完了");
         return canvas;

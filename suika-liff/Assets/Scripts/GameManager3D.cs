@@ -99,16 +99,16 @@ public class GameManager3D : MonoBehaviour
     /// </summary>
     void InitializeFruitData()
     {
-        fruitDataArray[0] = new FruitData { name = "さくらんぼ", color = new Color(0.8f, 0.1f, 0.1f), size = 0.4f };
-        fruitDataArray[1] = new FruitData { name = "いちご", color = new Color(1f, 0.2f, 0.2f), size = 0.5f };
-        fruitDataArray[2] = new FruitData { name = "ぶどう", color = new Color(0.5f, 0.2f, 0.6f), size = 0.6f };
-        fruitDataArray[3] = new FruitData { name = "デコポン", color = new Color(1f, 0.6f, 0.2f), size = 0.7f };
-        fruitDataArray[4] = new FruitData { name = "かき", color = new Color(1f, 0.5f, 0.1f), size = 0.8f };
-        fruitDataArray[5] = new FruitData { name = "りんご", color = new Color(0.9f, 0.1f, 0.1f), size = 0.9f };
-        fruitDataArray[6] = new FruitData { name = "なし", color = new Color(0.9f, 0.9f, 0.5f), size = 1.0f };
-        fruitDataArray[7] = new FruitData { name = "もも", color = new Color(1f, 0.7f, 0.7f), size = 1.1f };
-        fruitDataArray[8] = new FruitData { name = "パイナップル", color = new Color(0.9f, 0.8f, 0.2f), size = 1.2f };
-        fruitDataArray[9] = new FruitData { name = "スイカ", color = new Color(0.2f, 0.7f, 0.2f), size = 1.4f };
+        fruitDataArray[0] = new FruitData { name = "Cherry", color = new Color(0.8f, 0.1f, 0.1f), size = 0.4f };
+        fruitDataArray[1] = new FruitData { name = "Strawberry", color = new Color(1f, 0.2f, 0.2f), size = 0.5f };
+        fruitDataArray[2] = new FruitData { name = "Grape", color = new Color(0.5f, 0.2f, 0.6f), size = 0.6f };
+        fruitDataArray[3] = new FruitData { name = "Orange", color = new Color(1f, 0.6f, 0.2f), size = 0.7f };
+        fruitDataArray[4] = new FruitData { name = "Persimmon", color = new Color(1f, 0.5f, 0.1f), size = 0.8f };
+        fruitDataArray[5] = new FruitData { name = "Apple", color = new Color(0.9f, 0.1f, 0.1f), size = 0.9f };
+        fruitDataArray[6] = new FruitData { name = "Pear", color = new Color(0.9f, 0.9f, 0.5f), size = 1.0f };
+        fruitDataArray[7] = new FruitData { name = "Peach", color = new Color(1f, 0.7f, 0.7f), size = 1.1f };
+        fruitDataArray[8] = new FruitData { name = "Pineapple", color = new Color(0.9f, 0.8f, 0.2f), size = 1.2f };
+        fruitDataArray[9] = new FruitData { name = "Watermelon", color = new Color(0.2f, 0.7f, 0.2f), size = 1.4f };
     }
 
     /// <summary>
