@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ゲームメニュー - LINEミニアプリ</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow-x: hidden;
+        }
+
+        /* ヘッダー */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #667eea;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .user-greeting {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* メインコンテンツ */
+        .container {
+            flex: 1;
+            padding: 30px 20px;
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            text-align: center;
+            color: white;
+            font-size: 32px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .page-subtitle {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 40px;
+        }
+
+        /* ゲームカード */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            text-decoration: none;
+            color: inherit;
+            display: block;
+        }
+
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .game-card:active {
+            transform: translateY(-2px);
+        }
+
+        .game-thumbnail {
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .game-thumbnail::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .game-info {
+            padding: 20px;
+        }
+
+        .game-title {
+            font-size: 22px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .game-description {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+
+        .game-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .game-tag {
+            padding: 4px 12px;
+            background: #f0f0f0;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .game-tag.new {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .game-tag.popular {
+            background: #51cf66;
+            color: white;
+        }
+
+        /* 近日公開セクション */
+        .coming-soon-section {
+            margin-top: 40px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .coming-soon-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .coming-soon-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+        }
+
+        .coming-soon-text {
+            font-size: 18px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .coming-soon-list {
+            list-style: none;
+            padding: 0;
+            margin-top: 20px;
+        }
+
+        .coming-soon-list li {
+            padding: 10px;
+            background: #f8f9fa;
+            margin-bottom: 8px;
+            border-radius: 10px;
+            color: #666;
+        }
+
+        /* フッター */
+        .footer {
+            background: rgba(0, 0, 0, 0.3);
+            color: white;
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+        }
+
+        /* ローディング */
+        .loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            z-index: 1000;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* レスポンシブ */
+        @media (max-width: 600px) {
+            .page-title {
+                font-size: 24px;
+            }
+
+            .games-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .game-thumbnail {
+                height: 150px;
+                font-size: 60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ローディング -->
+    <div class="loading" id="loading">
+        <div class="spinner"></div>
+        <div style="color: white; font-size: 16px;">読み込み中...</div>
+    </div>
+
+    <!-- ヘッダー -->
+    <div class="header">
+        <img id="userAvatar" class="user-avatar" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='50' fill='%23667eea'/%3E%3C/svg%3E" alt="avatar">
+        <div class="user-info">
+            <div class="user-name" id="userName">ゲスト</div>
+            <div class="user-greeting">ゲームを選んで遊ぼう！</div>
+        </div>
+    </div>
+
+    <!-- メインコンテンツ -->
+    <div class="container">
+        <h1 class="page-title">🎮 ゲームメニュー</h1>
+        <p class="page-subtitle">遊びたいゲームを選んでね</p>
+
+        <!-- ゲーム一覧 -->
+        <div class="games-grid">
+            <!-- スイカゲーム Matter.js版 -->
+            <a href="suika-liff.html" class="game-card">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #ff6b6b 0%, #ff8e53 100%);">
+                    🍉
+                </div>
+                <div class="game-info">
+                    <div class="game-title">スイカゲーム</div>
+                    <div class="game-description">
+                        フルーツを落として合体させよう！<br>
+                        同じフルーツ同士をくっつけて大きくしていくパズルゲーム。
+                    </div>
+                    <div class="game-tags">
+                        <span class="game-tag popular">人気</span>
+                        <span class="game-tag">パズル</span>
+                        <span class="game-tag">物理演算</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Unity版スイカゲーム -->
+            <a href="unity.html" class="game-card">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    🎮
+                </div>
+                <div class="game-info">
+                    <div class="game-title">Unity スイカゲーム</div>
+                    <div class="game-description">
+                        Unity WebGL版のスイカゲーム。<br>
+                        より高度な3Dグラフィックスとエフェクトを楽しめます。
+                    </div>
+                    <div class="game-tags">
+                        <span class="game-tag new">NEW</span>
+                        <span class="game-tag">Unity</span>
+                        <span class="game-tag">3D</span>
+                    </div>
+                </div>
+            </a>
+
+            <!-- テトリス -->
+            <a href="tetris.html" class="game-card">
+                <div class="game-thumbnail" style="background: linear-gradient(135deg, #51cf66 0%, #37b24d 100%);">
+                    🟦
+                </div>
+                <div class="game-info">
+                    <div class="game-title">テトリス</div>
+                    <div class="game-description">
+                        クラシックなテトリスゲーム。<br>
+                        落ちてくるブロックを揃えて消そう！
+                    </div>
+                    <div class="game-tags">
+                        <span class="game-tag">クラシック</span>
+                        <span class="game-tag">パズル</span>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <!-- 近日公開 -->
+        <div class="coming-soon-section">
+            <h2 class="section-title">🚀 近日公開予定</h2>
+            <div class="coming-soon-card">
+                <div class="coming-soon-icon">🎯</div>
+                <div class="coming-soon-text">新しいゲームを準備中...</div>
+                <ul class="coming-soon-list">
+                    <li>🎰 スロットゲーム</li>
+                    <li>🃏 カードゲーム</li>
+                    <li>🏃 ランニングゲーム</li>
+                    <li>🧩 もっとパズルゲーム</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- フッター -->
+    <div class="footer">
+        <p>LINEミニアプリ ゲームコレクション</p>
+        <p style="font-size: 12px; margin-top: 5px; opacity: 0.8;">
+            Powered by Unity WebGL & Matter.js
+        </p>
+    </div>
+
+    <!-- LIFF SDK -->
+    <script charset="utf-8" src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+
+    <script>
+        // 設定
+        const LIFF_ID = '2008360067-zRDN6XnK'; // LIFF ID設定完了
+
+        // ページ読み込み時
+        window.addEventListener('load', async () => {
+            try {
+                // LIFF初期化
+                await liff.init({ liffId: LIFF_ID });
+
+                if (!liff.isLoggedIn()) {
+                    liff.login();
+                    return;
+                }
+
+                // プロフィール取得
+                const profile = await liff.getProfile();
+
+                // ユーザー情報表示
+                document.getElementById('userName').textContent = profile.displayName;
+                document.getElementById('userAvatar').src = profile.pictureUrl;
+
+                console.log('LIFF初期化成功:', profile);
+
+            } catch (error) {
+                console.error('LIFF初期化エラー:', error);
+                // エラーでもメニューは表示する
+            }
+        });
+
+        // ゲームカードクリック時のアニメーション
+        document.querySelectorAll('.game-card').forEach(card => {
+            card.addEventListener('click', (e) => {
+                const loading = document.getElementById('loading');
+                loading.classList.add('show');
+            });
+        });
+    </script>
+</body>
+</html>
