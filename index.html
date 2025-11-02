@@ -358,17 +358,61 @@
         let userProfile = null;
 
         const FRUITS = [
-            { emoji: '🍇', size: 18, color: '#9966cc', points: 1 },
-            { emoji: '🍒', size: 22, color: '#dc143c', points: 3 },
-            { emoji: '🍓', size: 26, color: '#ff1493', points: 6 },
-            { emoji: '🍑', size: 30, color: '#ff6347', points: 10 },
-            { emoji: '🍊', size: 34, color: '#ff8c00', points: 15 },
-            { emoji: '🍎', size: 38, color: '#ff0000', points: 21 },
-            { emoji: '🍐', size: 42, color: '#9acd32', points: 28 },
-            { emoji: '🍍', size: 46, color: '#ffd700', points: 36 },
-            { emoji: '🥭', size: 50, color: '#ff8c69', points: 45 },
-            { emoji: '🍈', size: 54, color: '#98fb98', points: 55 },
-            { emoji: '🍉', size: 58, color: '#ff6b6b', points: 66 }
+            {
+                emoji: '🍇', size: 18, color: '#9966cc', points: 1,
+                density: 0.0008, restitution: 0.4, friction: 0.3,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍒', size: 22, color: '#dc143c', points: 3,
+                density: 0.0009, restitution: 0.5, friction: 0.25,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍓', size: 26, color: '#ff1493', points: 6,
+                density: 0.001, restitution: 0.3, friction: 0.4,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍑', size: 30, color: '#ff6347', points: 10,
+                density: 0.0011, restitution: 0.4, friction: 0.35,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍊', size: 34, color: '#ff8c00', points: 15,
+                density: 0.0012, restitution: 0.6, friction: 0.2,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍎', size: 38, color: '#ff0000', points: 21,
+                density: 0.0013, restitution: 0.5, friction: 0.3,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍐', size: 42, color: '#9acd32', points: 28,
+                density: 0.0014, restitution: 0.4, friction: 0.35,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍍', size: 46, color: '#ffd700', points: 36,
+                density: 0.0015, restitution: 0.3, friction: 0.5,
+                shape: 'circle'
+            },
+            {
+                emoji: '🥭', size: 50, color: '#ff8c69', points: 45,
+                density: 0.0016, restitution: 0.4, friction: 0.3,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍈', size: 54, color: '#98fb98', points: 55,
+                density: 0.0017, restitution: 0.5, friction: 0.25,
+                shape: 'circle'
+            },
+            {
+                emoji: '🍉', size: 58, color: '#ff6b6b', points: 66,
+                density: 0.002, restitution: 0.6, friction: 0.2,
+                shape: 'circle'
+            }
         ];
 
         const CONTAINER_WIDTH = 350;
@@ -406,9 +450,17 @@
         }
 
         function initPhysics() {
-            engine = Engine.create();
+            engine = Engine.create({
+                positionIterations: 10, // より精密な位置計算
+                velocityIterations: 8, // より精密な速度計算
+                constraintIterations: 4, // より精密な制約計算
+                enableSleeping: true, // パフォーマンス最適化
+                timing: {
+                    timeScale: 1 // リアルタイム
+                }
+            });
             world = engine.world;
-            engine.world.gravity.y = 0.8;
+            engine.world.gravity.y = 1.0; // よりリアルな重力（9.8m/s²のスケーリング）
 
             render = Render.create({
                 canvas: canvas,
@@ -442,27 +494,164 @@
             Runner.run(runner, engine);
             Render.run(render);
 
+            // リアルなフルーツレンダリング
+            Events.on(render, 'afterRender', function() {
+                const ctx = render.canvas.getContext('2d');
+                const bodies = Composite.allBodies(world);
+
+                bodies.forEach(body => {
+                    if (body.isFruit) {
+                        const fruit = FRUITS[body.fruitType];
+                        const pos = body.position;
+                        const angle = body.angle;
+
+                        ctx.save();
+                        ctx.translate(pos.x, pos.y);
+                        ctx.rotate(angle);
+
+                        // リアルなグラデーション背景
+                        const gradient = ctx.createRadialGradient(-fruit.size * 0.3, -fruit.size * 0.3, 0, 0, 0, fruit.size * 1.2);
+                        gradient.addColorStop(0, lightenColor(fruit.color, 40));
+                        gradient.addColorStop(0.6, fruit.color);
+                        gradient.addColorStop(1, darkenColor(fruit.color, 30));
+
+                        // フルーツ形状を塗りつぶし
+                        if (fruit.shape === 'circle') {
+                            ctx.beginPath();
+                            ctx.arc(0, 0, fruit.size, 0, Math.PI * 2);
+                            ctx.fillStyle = gradient;
+                            ctx.fill();
+                        } else if (body.vertices) {
+                            ctx.beginPath();
+                            const vertices = body.vertices;
+                            ctx.moveTo(vertices[0].x - pos.x, vertices[0].y - pos.y);
+                            for (let i = 1; i < vertices.length; i++) {
+                                ctx.lineTo(vertices[i].x - pos.x, vertices[i].y - pos.y);
+                            }
+                            ctx.closePath();
+                            ctx.fillStyle = gradient;
+                            ctx.fill();
+                        }
+
+                        // リアルな光沢効果
+                        const highlight = ctx.createRadialGradient(-fruit.size * 0.35, -fruit.size * 0.35, 0, -fruit.size * 0.25, -fruit.size * 0.25, fruit.size * 0.5);
+                        highlight.addColorStop(0, 'rgba(255, 255, 255, 0.6)');
+                        highlight.addColorStop(0.5, 'rgba(255, 255, 255, 0.2)');
+                        highlight.addColorStop(1, 'rgba(255, 255, 255, 0)');
+
+                        ctx.beginPath();
+                        ctx.arc(-fruit.size * 0.25, -fruit.size * 0.25, fruit.size * 0.4, 0, Math.PI * 2);
+                        ctx.fillStyle = highlight;
+                        ctx.fill();
+
+                        // リアルな影効果
+                        ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+                        ctx.shadowBlur = fruit.size * 0.2;
+                        ctx.shadowOffsetX = fruit.size * 0.1;
+                        ctx.shadowOffsetY = fruit.size * 0.1;
+
+                        // 絵文字を描画
+                        ctx.shadowColor = 'transparent';
+                        const emojiSize = fruit.size * 1.5;
+                        ctx.font = `${emojiSize}px Arial`;
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText(fruit.emoji, 0, 0);
+
+                        ctx.restore();
+                    }
+                });
+            });
+
             Events.on(engine, 'collisionStart', handleCollisions);
+        }
+
+        // 色を明るくするヘルパー関数
+        function lightenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.min(255, (num >> 16) + amt);
+            const G = Math.min(255, (num >> 8 & 0x00FF) + amt);
+            const B = Math.min(255, (num & 0x0000FF) + amt);
+            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
+        }
+
+        // 色を暗くするヘルパー関数
+        function darkenColor(color, percent) {
+            const num = parseInt(color.replace('#', ''), 16);
+            const amt = Math.round(2.55 * percent);
+            const R = Math.max(0, (num >> 16) - amt);
+            const G = Math.max(0, (num >> 8 & 0x00FF) - amt);
+            const B = Math.max(0, (num & 0x0000FF) - amt);
+            return '#' + (0x1000000 + R * 0x10000 + G * 0x100 + B).toString(16).slice(1);
         }
 
         function createFruit(x, y, type) {
             const fruit = FRUITS[type];
             const body = Bodies.circle(x, y, fruit.size, {
-                restitution: 0.3,
-                friction: 0.5,
-                density: 0.001,
+                restitution: fruit.restitution,
+                friction: fruit.friction,
+                density: fruit.density,
+                frictionAir: 0.01, // リアルな空気抵抗
+                slop: 0.05, // 衝突の柔らかさ
                 render: {
                     fillStyle: fruit.color,
-                    strokeStyle: '#ffffff',
-                    lineWidth: 2
+                    strokeStyle: 'rgba(255, 255, 255, 0.5)',
+                    lineWidth: 2,
+                    opacity: 0.8
                 }
             });
 
             body.fruitType = type;
             body.isFruit = true;
 
+            // リアルな回転慣性
+            Body.setInertia(body, body.inertia * 1.2);
+
             World.add(world, body);
+
+            // 衝突音を再生
+            playCollisionSound(type);
+
             return body;
+        }
+
+        // リアルな衝突音システム
+        function playCollisionSound(fruitType, velocity = 1) {
+            if (!initAudio()) return;
+
+            const fruit = FRUITS[fruitType];
+            const osc = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            const filterNode = audioContext.createBiquadFilter();
+
+            // フルーツサイズと質量に基づく周波数
+            const massFreq = 200 - (fruit.density * 50000);
+            const sizeFreq = 150 - (fruit.size * 2);
+            const baseFreq = Math.max(40, (massFreq + sizeFreq) / 2);
+
+            // リアルな衝突音（低音のタンッという音）
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(baseFreq, audioContext.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(baseFreq * 0.3, audioContext.currentTime + 0.15);
+
+            // ローパスフィルターで自然な音質
+            filterNode.type = 'lowpass';
+            filterNode.frequency.setValueAtTime(400, audioContext.currentTime);
+            filterNode.Q.setValueAtTime(1, audioContext.currentTime);
+
+            // 衝突の強さに応じた音量
+            const volume = Math.min(masterVolume * velocity * 0.3, masterVolume * 0.2);
+            gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+            gainNode.gain.linearRampToValueAtTime(volume, audioContext.currentTime + 0.01);
+            gainNode.gain.exponentialRampToValueAtTime(0.001, audioContext.currentTime + 0.15);
+
+            osc.connect(filterNode);
+            filterNode.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+
+            osc.start(audioContext.currentTime);
+            osc.stop(audioContext.currentTime + 0.15);
         }
 
         function handleCollisions(event) {
